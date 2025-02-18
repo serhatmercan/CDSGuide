@@ -1,0 +1,22 @@
+Comment
+// Single Line
+/* Multi Line */
+
+Custom Apps
+-> Project Explorer
+-> Search: *z* type:ddls
+
+Demo Apps
+-> Project Explorer
+-> Search: *demo* type:ddls
+
+Project Explorer
+-> Project Explorer (Open ABAP Development Object): Ctrl + Shift + A
+
+Standard Apps
+-> Project Explorer
+-> Search: *material* type:ddls
+
+Trace
+-> T-Code: ST05
+-> SQL Trace: Active Trace, Process, Deactive Trace
