@@ -28,16 +28,27 @@
 }
 @OData.publish                      : true              " Display OData Service
 @Search.searchable                  : true              " Searchable
-@UI.headerInfo: {
-    description:{
-        type                        : #STANDARD,        " OPL: Header Info Key Field Type  = STANDARD || AS_CONNECTED_FIELDS || WITH_INTENT_BASED_NAVIGATION || WITH_NAVIGATION_PATH || WITH_URL
-        value                       : 'CustomerName',   " OPL: Header Info Description Field Value
-    },    
-    title: {
-        type                        : #STANDARD,        " OPL: Header Info Key Field Type  = STANDARD || AS_CONNECTED_FIELDS || WITH_INTENT_BASED_NAVIGATION || WITH_NAVIGATION_PATH || WITH_URL
-        value                       : 'SalesOrderID'    " OPL: Header Info Key Field Value   
+@UI: {
+    headerInfo: {
+        description:{
+            type                    : #STANDARD,        " OPL: Header Info Key Field Type  = STANDARD || AS_CONNECTED_FIELDS || WITH_INTENT_BASED_NAVIGATION || WITH_NAVIGATION_PATH || WITH_URL
+            value                   : 'CustomerName',   " OPL: Header Info Description Field Value
+        },    
+        title: {
+            type                    : #STANDARD,        " OPL: Header Info Key Field Type  = STANDARD || AS_CONNECTED_FIELDS || WITH_INTENT_BASED_NAVIGATION || WITH_NAVIGATION_PATH || WITH_URL
+            value                   : 'SalesOrderID'    " OPL: Header Info Key Field Value   
+        },
+        typeName                    : 'Purchase Order', " OPL: Header Info Text
+        typeNamePlural              : 'Purchase Orders' " CDS Data Table Count Plural Name  
     },
-    typeName                        : 'Purchase Order', " OPL: Header Info Text
-    typeNamePlural                  : 'Purchase Orders' " CDS Data Table Count Plural Name  
+    presentationVariant: [{
+        sortOrder: [{
+            by                      : 'Matnr',          " Field Name
+            direction               : #DESC             " ASC || DESC  
+        }],
+        visualizations: [{
+            type                    : #AS_LINEITEM      " AS_CHART || AS_DATAPOINT || AS_LINEITEM
+        }]
+    }]
 }
 @VDM.viewType                       : #CONSUMPTION      " View Types: BASIC || COMPOSITE || CONSUMPTION || EXTENSION || DERIVATION_FUNCTION || TRANSACTIONAL

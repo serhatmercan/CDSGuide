@@ -26,10 +26,15 @@ max( begda ) as BeginDate
 
 " Min: Find Minimum
 min( endda ) as EndDate
-min(case when o.lictp = 'Z010' then v.oidatto1 end) as amount,
+min(case when o.lictp = 'Z010' then v.oidatto1 end) as Amount
 
 " Mod: Returns the Remainder of a Number
 mod(ceil(amount),5)         " => 3
+
+" Numeric Value (String -> Numeric)
+" --> '00015'   || '99.75'
+" <-- 15        || 99.75 
+get_numeric_value(Pricing.ConditionQuantity)
 
 " Round: Rounded To The Nearest Decimal
 round(amount,1) " => 17.9

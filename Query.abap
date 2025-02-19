@@ -67,6 +67,20 @@ define root view entity ZSM_I_001
       b.com_idtext as fieldII
 }
 
+" Function
+define view entity ZSM_I_WORKING_DAYS
+  as select from ZSM_F_WORKING_DAYS( p_client: $session.client , p_fabkl: 'PI' )
+{
+  key CalendarDate,
+      FactoryCalendar,
+      MonthFirstDate,
+      MonthLastDate,
+      WorkingDaysMonth,
+      IsWorkingDay
+}
+where
+  IsWorkingDay <> 0
+
 " Group By II
 select from ZSM_T_001 {
     key vbeln,

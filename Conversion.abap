@@ -28,6 +28,11 @@ cast( cast( mmh.mcount as abap.dec(16,3) ) / 1000 as abap.dec(16,3) ) as Total_H
 " Decimal - III
 0.25 AS DecimalValue " => 0.25
 
+" Decimal - IV
+" --> '99.75'
+" <-- 99
+cast(get_numeric_value(Pricing.ConditionQuantity) as abap.dec(5,0)) as ConditionQuantity
+
 " Decimal - Float
 " --> 12345.678
 " <-- 1.2345678E+4
