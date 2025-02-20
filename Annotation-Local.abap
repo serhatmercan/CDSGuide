@@ -1,6 +1,9 @@
 " Local
 @Consumption: {
     filter: {
+        hidden                  : false,
+        mandatory               : true,
+        multipleSelections      : false,
         selectionType           : #INTERVAL                     " Selection Types: SINGLE || INTERVAL || RANGE || HIERARCHY_NODE
     },
     hidden                      : true,                         " Hidden in OData & UI
@@ -80,6 +83,9 @@
     },
     lineItem: {
         criticality             : 'QuantityCrytical',           " Data Visualization: Criticality
+        cssDefault: {
+            width               : '10em'                        " 
+        },
         importance              : #HIGH,                        " Importance: #LOW || #MEDIUM || #HIGH       
         position                : 10,                           " Position
         type                    : #AS_DATAPOINT,                " Rating Indicator w/ UI.dataPoint: {targetValue, visualization: #RATING}
@@ -114,7 +120,22 @@ define view ZSM_I_001
         virtualElementCalculatedBy : 'ABAP:ZSM_CL_TOTAL_ORDER'   
     }
     @Semantics.quantity.unitOfMeasure : 'WAERK_VA'
-    cast( 0 as abap.curr( 15, 2 )) as netwr_vf, 
+    cast( 0 as abap.curr( 15, 2 )) as NetwrVF, 
+
+    " Consumption: Filter
+    @Consumption.filter: {
+        hidden: false,
+        mandatory: true,        
+        multipleSelections: false,
+        selectionType: #SINGLE
+    },
+    @Search: {
+        defaultSearchElement: true
+    }
+    @UI: {
+        selectionField: [{ position: 10 }] 
+    }      
+    Budat,
 
     " Consumption: Value Help
     @Consumption: { 
@@ -133,6 +154,31 @@ define view ZSM_I_001
         textArrangement: #TEXT_FIRST
     }
     key oiisocisl.lgort as StorageLocation,
+
+    " Consumption: Value Help (Multi)
+    @Consumption.valueHelpDefinition: [{ 
+        entity: { 
+            name: 'ZSM_I_BATCH_MATNR_VH',
+            element: 'Charg' 
+        },
+        label: 'Batches Related to Material',
+        qualifier: 'QF_Material' 
+    },{ 
+        entity: { 
+            name: 'ZSM_I_BATCH_WERKS_VH',
+            element: 'Charg' 
+        },
+        label: 'Batches Related to Plant Material',
+        qualifier: 'QF_PlantMaterial'
+    }, { 
+        entity: { 
+            name: 'ZSM_I_BATCH_LIFNR_VH',
+            element: 'Charg' 
+        },
+        label: 'Batches Related to Supplier',
+        qualifier: 'QF_Supplier' 
+    }]
+    Batch,
 
     " Currency Code: Assign
     @Semantics.amount.currencyCode: 'Currency'

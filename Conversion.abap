@@ -11,7 +11,20 @@ cast(
 cast(amount as abap.char( 20 )) as AmountChar " => 28.1907             (20 Characters)
 
 " Currency
-cast(wrbtr as abap.curr( 20, 3 )) as Curr   
+cast(wrbtr as abap.curr( 20, 3 )) as Curr
+
+" Currency Conversion
+" Table: T0001
+" --> Budat: 20250220 & Waers: EUR & Wrbtr: 100
+" <-- Exchange Rate: 1.10 & DocumentAmount: 110
+@Semantics.amount.currencyCode: 'DocumentCurrency'
+sum( currency_conversion( amount                => T0001.Wrbtr,
+                          exchange_rate_date    => T0001.Budat,
+                          round                 => 'X',
+                          source_currency       => T0001.Waers,
+                          target_currency       => $projection.DocumentCurrency,
+                          error_handling        => 'SET_TO_NULL' ) )                as DocumentAmount,
+cast('USD' as abap.cuky( 5 ))                                                       as DocumentCurrency
 
 " Date - I
 cast( '00000000' as abap.dats) as zdate
@@ -59,6 +72,12 @@ cast(substring(vbep.edatu, 1, 6) as abap.numc(6)) as endmn
 
 " Standard Type
 cast('1000000028' as matnr) as MatnrEx " => CHAR 40 : '0000000000000000000000000000001000000028'
+
+" Time
+" --> '123456' || '999999'
+" <--  123456  ||  000000 
+tims_to_timn( Main.DocumentTime, 'NULL' )
+tims_to_timn( cast( '000000' as abap.tims ), 'NULL' )
 
 " Timestamp
 cast ( dip.etmstm as timestamp ) as item_time
