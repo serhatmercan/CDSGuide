@@ -40,11 +40,20 @@ define view ZSM_I_001
       ProductText[language = $session.system_language].text as ProductName
 }
 
+" Parent
+define view entity ZSM_I_001
+  as select from zsm_t_0001       as T1
+  association to parent ZOG_I_002 as _T2 on _T2.UUID = $projection.UUID
+{
+  key T1.UUID,
+  _T2
+}
+
 " Projection
 define view ZSM_I_001 
   as select from mara as Mara 
   association [0..1] to makt as _Makt on _Makt.matnr = $projection.MaterialNo
 {
-    Mara.matnr as MaterialNo,
+    Mara.matnr  as MaterialNo,
     _Makt.maktx as MaterialText
 }

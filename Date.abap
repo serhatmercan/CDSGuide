@@ -17,3 +17,13 @@ dats_days_between(birth_date, cast('20241124' as abap.dats)) " => 10
 
 " Check Date
 dats_is_valid(birth_date) " => 0: False || 1: True
+
+" Convert Date & Time To Timestamp
+" StartDate (DATS)              : 20250221 
+" StartTime (TIMS)              : 121500
+" Timestamp (YYYYMMDDHHMMSS)    : 20250221121500
+dats_tims_to_tstmp( StartDate,
+                    StartTime,
+                    abap_system_timezone( $session.client, 'NULL' ),
+                    $session.client,
+                    'NULL' ) as Timestamp

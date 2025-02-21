@@ -32,6 +32,16 @@ cast( '00000000' as abap.dats) as zdate
 " Date - II
 cast( '20241114' as abap.dats ) " =>  2024-11-14 || YYYY-MM-DD
 
+" Date & Time To Timestamp
+" StartDate (DATS)              : 20250221 
+" StartTime (TIMS)              : 121500
+" Timestamp (YYYYMMDDHHMMSS)    : 20250221121500
+dats_tims_to_tstmp( StartDate,
+                    StartTime,
+                    abap_system_timezone( $session.client, 'NULL' ),
+                    $session.client,
+                    'NULL' ) as Timestamp
+
 " Decimal - I
 cast(amount as abap.dec( 10, 2 )) " => 28.19
 
@@ -81,6 +91,11 @@ tims_to_timn( cast( '000000' as abap.tims ), 'NULL' )
 
 " Timestamp
 cast ( dip.etmstm as timestamp ) as item_time
+
+" Timestamp Current
+" --> 21 February 2025, 14:50:45.123 UTC
+" <-- 20250221145045.123
+tstmp_current_utctimestamp()
 
 " Timestamp to Date (YYYYMMDDHHMMSS -> YYYYMMDD)
 " --> 20240212083000 (2024-02-12 08:30:00)

@@ -22,12 +22,12 @@ as select from ZSM_T_001 {
 " Average & Count & Count(Distinct) & Min & Max & Sum
 select from ZSM_T_001 {
     vbeln,
-    avg(amount)             as POAverage,
-    count(*)                as POCount,
-    count(distinct amount)  as POCountDistinct,
-    min(amount)             as POMin,
-    max(amount)             as POMax,
-    sum(amount)             as POSum
+    avg(amount)                 as POAverage,
+    count(*)                    as POCount,
+    count( distinct amount )    as POCountDistinct,
+    min(amount)                 as POMin,
+    max(amount)                 as POMax,
+    sum(amount)                 as POSum
 }
 group by vbeln
 
