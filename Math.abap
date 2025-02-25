@@ -1,7 +1,7 @@
-" Math Operations
+" Math Operations in ABAP
 amount = 17.856 as ...
 
-" Abs: Absolute
+" Abs: Absolute Value
 abs(amount) as AmountABS    " => 17.856
 
 " Add & Subtract & Multiply
@@ -16,17 +16,21 @@ ceil(amount, 1)             " => 18
 div(amount, 5)              " => 3
 
 " Division: Division w/ Decimal
-division(amount, 3, 2)      " => 5.95
+" --> 17.856 / 3
+" <-- 5.952
+division(amount, 3, 2) as AmountDiv
 
 " Floor: Down Nearest Integer
-floor(amount, 1)            " => 17.8
+" --> 17.856
+" <-- 17.8
+floor(amount, 1) as AmountFloor
 
 " Max: Find Maximum
 max( begda ) as BeginDate
 
 " Min: Find Minimum
 min( endda ) as EndDate
-min(case when o.lictp = 'Z010' then v.oidatto1 end) as Amount
+min( case when o.lictp = 'Z010' then v.oidatto1 end ) as Amount
 
 " Mod: Returns the Remainder of a Number
 mod(ceil(amount),5)         " => 3

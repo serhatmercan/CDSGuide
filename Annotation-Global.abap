@@ -5,28 +5,29 @@
         type                        : #FULL                     " View Buffer Property        || w/ Status
     },
     compiler: {
-        compareFilter               : true
+        compareFilter               : true                      " Compare Filter
     }
     preserveKey                     : true,                     " true: From CDS Key  || false: From Tables
     sqlViewName                     : 'ZSM_CDS_001'             " View Name (SE11),
-    viewEnhancementCategory         : [#NONE]                   " GROUP_BY || NONE || UNION || PROJECTION_LIST 
+    viewEnhancementCategory         : [#NONE]                   " View Enhancement Category: GROUP_BY || NONE || UNION || PROJECTION_LIST 
 }
 @AccessControl.authorizationCheck   : #NOT_REQUIRED             " Check Access Control = #CHECK || #NOT_ALLOWED || #NOT_REQUIRED
+@Analytics.query                    : true                      " Analytics Query 
 @ClientHandling.algorithm           : #SESSION_VARIABLE         " AUTOMATED || NONE || SESSION_VARIABLE
-@Consumption.ranked                 : true                      "  
-@EndUserText.label                  : 'CDS Description'         " CDS Description
+@Consumption.ranked                 : true                      " Consumption Ranking
+@EndUserText.label                  : 'CDS Description'         " CDS Description 
 @Metadata.allowExtensions           : true
 @ObjectModel: {
-  createEnabled                     : true,                     " 
-  deleteEnabled                     : true,                     "
-  updateEnabled                     : true,                     "
+  createEnabled                     : true,                     " Create Enabled
+  deleteEnabled                     : true,                     " Delete Enabled
+  updateEnabled                     : true,                     " Update Enabled    
   usageType: {
-    dataClass                       : #MIXED,                   " CUSTOMIZING || MASTER || META || MIXED || ORGANIZATIONAL || TRANSACTIONAL
-    serviceQuality                  : #X,                       " A || B || C || D || X || P
-    sizeCategory                    : #S                        " S || M || L || XL || XXL 
+    dataClass                       : #MIXED,                   " Data Class: CUSTOMIZING || MASTER || META || MIXED || ORGANIZATIONAL || TRANSACTIONAL
+    serviceQuality                  : #X,                       " Service Quality: A || B || C || D || X || P
+    sizeCategory                    : #S                        " Size Category:   S || M || L || XL || XXL 
   },
   query: {
-    implementedBy                   : 'ABAP:ZSM_CL_IM_QUERY'
+    implementedBy                   : 'ABAP:ZSM_CL_IM_QUERY'    " Implemented By        
   }
 }
 @OData.publish                      : true                      " Display OData Service
@@ -47,7 +48,7 @@
     presentationVariant: [{
         sortOrder: [{
             by                      : 'Matnr',                  " Field Name
-            direction               : #DESC                     " ASC || DESC  
+            direction               : #DESC                     " Sort Order: ASC || DESC  
         }],
         visualizations: [{
             type                    : #AS_LINEITEM              " AS_CHART || AS_DATAPOINT || AS_LINEITEM

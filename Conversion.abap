@@ -1,16 +1,19 @@
+" Conversion Functions      
 amount = '28.1907'
 
-" Case
+" Case 
 cast(   
     case mara.meins
          when 'ST' then 'X'
          else '' 
     end as xfeld preserving type ) as Unit
 
-" Character
-cast(amount as abap.char( 20 )) as AmountChar " => 28.1907             (20 Characters)
+" Character (CHAR)
+" --> 28.1907
+" <-- 28.1907             (20 Characters)
+cast(amount as abap.char( 20 )) as AmountChar
 
-" Currency
+" Currency (CUKY)
 cast(wrbtr as abap.curr( 20, 3 )) as Curr
 
 " Currency Conversion
@@ -26,32 +29,41 @@ sum( currency_conversion( amount                => T0001.Wrbtr,
                           error_handling        => 'SET_TO_NULL' ) )                as DocumentAmount,
 cast('USD' as abap.cuky( 5 ))                                                       as DocumentCurrency
 
-" Date - I
-cast( '00000000' as abap.dats) as zdate
+" Date - I (YYYYMMDD -> YYYY-MM-DD)
+" --> 00000000
+" <-- 0000-00-00
+cast( '00000000' as abap.dats) as Date
 
-" Date - II
-cast( '20241114' as abap.dats ) " =>  2024-11-14 || YYYY-MM-DD
+" Date - II (YYYYMMDD -> YYYY-MM-DD)
+" --> 20250221
+" <-- 2025-02-21
+cast( '20241114' as abap.dats ) as Date
 
-" Date & Time To Timestamp
-" StartDate (DATS)              : 20250221 
-" StartTime (TIMS)              : 121500
-" Timestamp (YYYYMMDDHHMMSS)    : 20250221121500
+" Date & Time To Timestamp (DATS & TIMS -> YYYYMMDDHHMMSS)
+" --> StartDate: 20250221 & StartTime: 121500
+" <-- Timestamp: 20250221121500
 dats_tims_to_tstmp( StartDate,
                     StartTime,
                     abap_system_timezone( $session.client, 'NULL' ),
                     $session.client,
                     'NULL' ) as Timestamp
 
-" Decimal - I
-cast(amount as abap.dec( 10, 2 )) " => 28.19
+" Decimal - I (DEC)
+" --> 28.1907
+" <-- 28.19
+cast(amount as abap.dec( 10, 2 )) as AmountDec
 
-" Decimal - II
-cast( cast( mmh.mcount as abap.dec(16,3) ) / 1000 as abap.dec(16,3) ) as Total_Height
+" Decimal - II (DEC)
+" --> 1000
+" <-- 1
+cast( cast( mmh.mcount as abap.dec(16,3) ) / 1000 as abap.dec(16,3) ) as TotalHeight
 
-" Decimal - III
-0.25 AS DecimalValue " => 0.25
+" Decimal - III (DEC)
+" --> 0.25  
+" <-- 0.25    
+0.25 as DecimalValue
 
-" Decimal - IV
+" Decimal - IV (DEC)
 " --> '99.75'
 " <-- 99
 cast(get_numeric_value(Pricing.ConditionQuantity) as abap.dec(5,0)) as ConditionQuantity
@@ -59,42 +71,48 @@ cast(get_numeric_value(Pricing.ConditionQuantity) as abap.dec(5,0)) as Condition
 " Decimal - Float
 " --> 12345.678
 " <-- 1.2345678E+4
-cast( nsum.ScheduledQuantity as abap.decfloat34 )
+cast( nsum.ScheduledQuantity as abap.decfloat34 ) as ScheduledQuantity
 
-" Default Type
-'1000000017' as MatNumc " => NUMC 11 => 1000000017
+" Default Type (Default)
+" -->                              1000000017
+" <-- 1000000017    
+cast( '1000000017' as abap.default ) as MatNumd " => CHAR 40 : '1000000017'
 
 " Floating Point Number (FLTP)
-cast( 0 as abap.fltp ) as kdv
+cast( 0 as abap.fltp ) as KDV
 
 " Floating Point Number (FLTP) -> Decimal (DEC)
 " --> 23.456789
 " <-- 23.457
 fltp_to_dec( diptemp.par_fltp as abap.dec( 13, 3 ) ) as Temperature
 
-" Integer
-cast(0 as abap.int2) as intvalue
+" Integer (INT1)
+cast(0 as abap.int2) as IntValue
 
-" Numeric
+" Numeric (NUMC)
 " --> YYYYMMDD: 20250213 
 " <-- YYYYMM  : 202502
-cast(substring(vbep.edatu, 1, 6) as abap.numc(6)) as endmn
+cast(substring(vbep.edatu, 1, 6) as abap.numc(6)) as Endmn
 
-" Standard Type
-cast('1000000028' as matnr) as MatnrEx " => CHAR 40 : '0000000000000000000000000000001000000028'
+" Standard Type (STANDARD)  
+" --> '1000000028'
+" <-- '0000000000000000000000000000001000000028' (CHAR40)
+cast('1000000028' as matnr) as MatnrEx
 
-" Time
+" Time (TIMS)
 " --> '123456' || '999999'
 " <--  123456  ||  000000 
 tims_to_timn( Main.DocumentTime, 'NULL' )
 tims_to_timn( cast( '000000' as abap.tims ), 'NULL' )
 
-" Timestamp
-cast ( dip.etmstm as timestamp ) as item_time
-
-" Timestamp Current
-" --> 21 February 2025, 14:50:45.123 UTC
+" Timestamp (TIMESTAMP)
+" --> 2025-02-21 14:50:45.123
 " <-- 20250221145045.123
+cast ( dip.etmstm as timestamp ) as ItemTime
+
+" Timestamp Current (UTC)
+" --> 2025-02-21 14:50:45.123 UTC
+" <-- 20250221145045.123    
 tstmp_current_utctimestamp()
 
 " Timestamp to Date (YYYYMMDDHHMMSS -> YYYYMMDD)
@@ -112,7 +130,16 @@ tstmp_to_tims( cast(ftmstm as abap.dec( 15, 0 )),
                     abap_system_timezone( $session.client,'NULL' ), 
                     $session.client, 'NULL' ) as StartTime
 
-" Quantity
+" Quantity (QUAN)
 " --> 9876543.21
 " <-- 9876543.210
 cast( 0 as abap.quan( 13, 3 )) as lfimg_vl
+
+" Unit
+" --> Distance: 100
+" --> DistanceUnit: 'KM'
+" --> TargetUnit: 'MI or cast( 'MI' as abap.unit )
+" <-- 62.1371
+unit_conversion( quantity    => Distance,
+                 source_unit => DistanceUnit,
+                 target_unit => TargetUnit ) as DistanceMI

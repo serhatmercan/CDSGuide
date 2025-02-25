@@ -5,7 +5,7 @@
 "     [0..*]         0      Unlimited
 "     [1..*]         1      Unlimited
 
-" Default
+" Default Cardinality
 define view ZSM_I_001 
   as select from mara as Mara 
   association [0..1] to makt as _Makt on _Makt.matnr = Mara.matnr
@@ -14,7 +14,7 @@ define view ZSM_I_001
     _Makt.maktx
 }
 
-" Multi
+" Multi Cardinality
 define view ZSM_I_001
   as select from snwd_so as SO
   association [1..*] to snwd_so_i as _SOI on _SOI.parent_key = $projection.node_key
@@ -29,7 +29,7 @@ define view ZSM_I_001
       _BPA.phone_number
 }
 
-" Filter
+" Filter Cardinality
 define view ZSM_I_001
   as select from snwd_pd as Product
   association [0..*] to snwd_texts as ProductText on ProductText.parent_key = $projection.name_guid
@@ -40,7 +40,7 @@ define view ZSM_I_001
       ProductText[language = $session.system_language].text as ProductName
 }
 
-" Parent
+" Parent Child Cardinality
 define view entity ZSM_I_001
   as select from zsm_t_0001       as T1
   association to parent ZOG_I_002 as _T2 on _T2.UUID = $projection.UUID
@@ -49,7 +49,7 @@ define view entity ZSM_I_001
   _T2
 }
 
-" Projection
+" Projection Cardinality
 define view ZSM_I_001 
   as select from mara as Mara 
   association [0..1] to makt as _Makt on _Makt.matnr = $projection.MaterialNo

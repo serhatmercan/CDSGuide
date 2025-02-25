@@ -1,9 +1,3 @@
-" Case
-case mara.meins
-    when 'ST' then 'X'
-    else '' 
-end as unit
-
 " Case w/ Date + Mod
 case mod( dats_days_between( cast( '20250101' as abap.dats ), $projection.due_date ), 7 )
     when 0 then 'Monday'
@@ -20,3 +14,9 @@ case matdoc.shkzg
    when 'H' then - matdoc.menge
    when 'S' then + matdoc.menge
 end as menge
+
+" Case w/ String
+case mara.meins
+    when 'ST' then 'X'
+    else '' 
+end as unit

@@ -102,3 +102,7 @@ where meins =  'ST'
    or vbap.matnr between '000000000000005000' and '000000000000006999'
    or vbrk.vbeln is null
    or funcarea is not initial
+
+" Having Sum    
+having sum(SNWD_SO.gross_amount) > 100000
+     

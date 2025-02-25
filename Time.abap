@@ -1,7 +1,7 @@
-" Validation: Return => 0 || 1
+" Validation: Return => (0 = Invalid || 1 = Valid)
 tims_is_valid( Main.DocumentTime ) = 1
 
-" Validation & Conversion
+" Validation & Conversion 
 " --> '123456' || '999999' || NULL
 " <--  123456  ||  000000  || 000000
 case when tims_is_valid( Main.DocumentTime ) = 1 then tims_to_timn( Main.DocumentTime, 'NULL' )
