@@ -1,4 +1,12 @@
 " Local
+@AnalyticsDetails: {
+    query: {
+        axis                    : #ROWS,                        " COLUMNS || FREE || ROWS
+        formula                 : 'NODIM(IntrstRtInPrcnt+0)'    " 
+        display                 : #TEXT,                        " KEY || KEY_TEXT || TEXT || TEXT_KEY
+        variableSequence        : 10                            " Type: Integer
+    }
+}
 @Consumption: {
     filter: {
         hidden                  : false,
@@ -20,6 +28,7 @@
         } 
     }]               
 }
+@DefaultAggregation             : #FORMULA                      " AVG || COUNT || COUNT_DISTINCT || FORMULA || MAX || MIN || NONE || SUM   
 @EndUserText.label              : 'Material'                    " Text Field Name in OData & UI
 @ObjectModel: {
     foreignKey: {
@@ -105,6 +114,16 @@
 define view ZSM_I_001 
   as select from vbap {
     key vbeln,
+
+    " Analictics Detail
+    @AnalyticsDetails: {
+        query: {
+            axis                : #FREE,
+            display             : #TEXT,
+            variableSequence    : 10
+        }   
+    }
+    CounterParty,
 
     " Calculate Field - I
     @ObjectModel: {

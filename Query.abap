@@ -96,7 +96,9 @@ select from ZSM_T_001 {
 where meins =  'ST'
   and auart <> 'Z113'
   and ersda =  $session.system_date
+  and s_fiscyear = left( $session.system_date, 4 )
   and ( ekko.bsart like 'ZH%' or ekko.bsart like 'ZU%' )
   and not( likp.vbeln is null and vbrk.sfakn = '' )
    or vbap.matnr between '000000000000005000' and '000000000000006999'
    or vbrk.vbeln is null
+   or funcarea is not initial

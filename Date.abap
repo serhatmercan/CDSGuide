@@ -15,6 +15,8 @@ dats_add_months(birth_date, -2, null)   " => 2024-09-24
 dats_days_between(birth_date, cast('20241104' as abap.dats)) " => -10
 dats_days_between(birth_date, cast('20241124' as abap.dats)) " => 10
 
+dats_days_between(cast( $session.system_date as abap.dats ), TransactionCashFlow.PaymentDate) as abap.dec( 10, 2 )  
+
 " Check Date
 dats_is_valid(birth_date) " => 0: False || 1: True
 

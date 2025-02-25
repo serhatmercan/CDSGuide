@@ -2,7 +2,15 @@
 @EndUserText.label: 'Parameters'
 
 define view ZSM_I_002
-with parameters p_meins: meins, p_mtart: mtart 
+with parameters p_displaycurrency                     : vdm_v_display_currency,
+                
+                @Environment.systemField: #SYSTEM_DATE
+                p_key_date                            : vdm_v_key_date,
+                p_meins                               : meins, 
+                p_mtart                               : mtart,
+                
+                @Consumption.defaultValue: 5
+                P_number_of_years_of_time_to_maturity : ftr_years_to_maturity
 as select from mara {
     matnr,
     matkl,
