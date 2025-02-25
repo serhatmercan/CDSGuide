@@ -36,3 +36,7 @@ define root view entity ZSD_I_0002
       _BDI._BillingDocument._SalesOrganization.SalesOrganization                                                as vkorg,
       _BDI._BillingDocument._SalesOrganization._Text[Language = $session.system_language].SalesOrganizationName as vkorg_text
 }
+
+" Ex: System Language w/ Parameter
+@Semantics.text: true
+_Equipment._EquipmentText[ 1:Language = $session.system_language ].EquipmentName

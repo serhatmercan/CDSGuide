@@ -31,9 +31,13 @@
 @DefaultAggregation             : #FORMULA                      " AVG || COUNT || COUNT_DISTINCT || FORMULA || MAX || MIN || NONE || SUM   
 @EndUserText.label              : 'Material'                    " Text Field Name in OData & UI
 @ObjectModel: {
+    filter: { 
+        transformedBy           : 'ABAP:ZSM_CL_TOTAL_ORDER'
+    },
     foreignKey: {
         association             : '_Plant'                      " Association Reference
     },
+    readOnly                    : true,
     text: {
         association             : '_MaterialText'               " Association Reference
         element                 : [ 'veh_text' ]                " Field Description ( Key & Description )            
