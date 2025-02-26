@@ -70,9 +70,19 @@
     unitOfMeasure                       : true                          " Define Unit of Measure 
 }
 @UI: {
+    criticalityCalculation: {
+        deviationRangeHighValue         : 10,                           " Deviation Range High Value
+        deviationRangeLowValue          : 000,                          " Deviation Range Low Value
+        improvementDirection            : #TARGET,                      " Improvement Direction: #MAXIMIZE || #MINIMIZE || #TARGET
+        toleranceRangeHighValue         : 1000,                         " Tolerance Range High Value    
+        toleranceRangeLowValue          : 8                             " Tolerance Range Low Value        
+    },
     dataPoint: {
         title                           : 'Material',                   " Text Field Name in UI      
         targetValue                     : 6,                            " Rating Indicator w/ UI.dataPoint.visualization: #RATING, UI.lineItem.type: #AS_DATAPOINT
+        valueFormat:{
+            numberOfFractionalDigits    : 2                             " Number of Fractional Digits
+        }
         visualization                   : #RATING                       " Rating Indicator w/ UI.dataPoint.targetValue, UI.lineItem.type: #AS_DATAPOINT
     },
     facet: [                                                            " Body Facets
@@ -329,6 +339,27 @@ define view ZSM_I_001
         type: #AS_DATAPOINT
     }
     Rating,
+
+    " Rating Indicator II (Bar Chart)
+    @UI: {
+        dataPoint: {
+            criticalityCalculation: {
+                deviationRangeHighValue: 10,
+                deviationRangeLowValue: 000,    
+                improvementDirection: #TARGET,
+                toleranceRangeHighValue: 1000,
+                toleranceRangeLowValue: 8                
+            },
+            title: 'Number of Plants in CC'        
+        },
+        lineItem: {
+            label: 'Total Plants in CC',
+            position: 20,
+            type: #AS_DATAPOINT,
+            qualifier: 'Q1'        
+        }
+    }
+    key count(*) as TotalPlants,
 
     " Search & Value Help
     @Consumption.valueHelpDefault.binding.usage:#FILTER_AND_RESULT

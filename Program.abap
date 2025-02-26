@@ -1,3 +1,4 @@
+" Description: ABAP Program to Demonstrate the Usage of CDS Views in ABAP
 REPORT zsm_p_001.
 
 START-OF-SELECTION.

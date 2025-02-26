@@ -9,9 +9,8 @@
 }
 
 define table function zsm_f_amdp
-  with parameters
-    @Environment.systemField: #CLIENT
-    p_client : abap.clnt
+  with parameters @Environment.systemField  : #CLIENT
+                  p_client                  : abap.clnt
 
 returns
 {
@@ -52,21 +51,16 @@ CLASS ZSM_CL_AMDP IMPLEMENTATION.
 * | Static Public Method ZSM_CL_AMDP=>GET_DATA
 * +-------------------------------------------------------------------------------------------------+
 * +--------------------------------------------------------------------------------------</SIGNATURE>
-  METHOD get_data
-    BY DATABASE FUNCTION FOR HDB
-         LANGUAGE SQLSCRIPT
-         OPTIONS READ-ONLY USING zsm_i_amdp .
-    RETURN
-    SELECT DISTINCt
-      p_client          as Client,
-      docno             as DocNo,
-      docitemno         as DocItemNo,
-      docitemguid       as DocItemGuid,
-      pricebegintime    as PriceBeginTime,
-      pricebegindate    as PriceBeginDate,
-      priceendtime      as PriceEndTime,
-      priceenddate      as PriceEndDate,
-      workdays_between( 'PI', PriceBeginDate, PriceEndDate ) + 1 as WorkingDay
-      FROM zsm_i_amdp;
+  METHOD get_data BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT OPTIONS READ-ONLY USING zsm_i_amdp.
+    RETURN SELECT DISTINCT p_client                                                   as Client,
+                           docno                                                      as DocNo,
+                           docitemno                                                  as DocItemNo,
+                           docitemguid                                                as DocItemGuid,
+                           pricebegintime                                             as PriceBeginTime,
+                           pricebegindate                                             as PriceBeginDate,
+                           priceendtime                                               as PriceEndTime,
+                           priceenddate                                               as PriceEndDate,
+                           workdays_between( 'PI', PriceBeginDate, PriceEndDate ) + 1 as WorkingDay
+                      FROM zsm_i_amdp;
   ENDMETHOD.
 ENDCLASS.

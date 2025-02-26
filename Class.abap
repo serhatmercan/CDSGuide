@@ -1,7 +1,7 @@
 CLASS zsm_cl_total_order DEFINITION
  PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     INTERFACES if_sadl_exit_calc_element_read.

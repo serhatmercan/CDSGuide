@@ -1,7 +1,7 @@
 " Conversion Functions      
-amount = '28.1907'
+Amount = '28.1907'
 
-" Case 
+" Case
 cast(   
     case mara.meins
          when 'ST' then 'X'
@@ -11,15 +11,18 @@ cast(
 " Character (CHAR)
 " --> 28.1907
 " <-- 28.1907             (20 Characters)
-cast(amount as abap.char( 20 )) as AmountChar
+cast(Amount as abap.char( 20 )) as AmountChar
 
 " Currency (CUKY)
-cast(wrbtr as abap.curr( 20, 3 )) as Curr
+cast(Wrbtr as abap.curr( 20, 3 )) as Currency
 
 " Currency Conversion
 " Table: T0001
-" --> Budat: 20250220 & Waers: EUR & Wrbtr: 100
-" <-- Exchange Rate: 1.10 & DocumentAmount: 110
+" --> Budat: 20250220 
+" --> Waers: EUR 
+" --> Wrbtr: 100
+" --- Exchange Rate: 1.10
+" <-- DocumentAmount: 110
 @Semantics.amount.currencyCode: 'DocumentCurrency'
 sum( currency_conversion( amount                => T0001.Wrbtr,
                           exchange_rate_date    => T0001.Budat,
@@ -51,7 +54,7 @@ dats_tims_to_tstmp( StartDate,
 " Decimal - I (DEC)
 " --> 28.1907
 " <-- 28.19
-cast(amount as abap.dec( 10, 2 )) as AmountDec
+cast(Amount as abap.dec( 10, 2 )) as AmountDec
 
 " Decimal - II (DEC)
 " --> 1000
@@ -113,7 +116,7 @@ cast ( dip.etmstm as timestamp ) as ItemTime
 " Timestamp Current (UTC)
 " --> 2025-02-21 14:50:45.123 UTC
 " <-- 20250221145045.123    
-tstmp_current_utctimestamp()
+tstmp_current_utctimestamp() as CurrentTime
 
 " Timestamp to Date (YYYYMMDDHHMMSS -> YYYYMMDD)
 " --> 20240212083000 (2024-02-12 08:30:00)
@@ -133,7 +136,7 @@ tstmp_to_tims( cast(ftmstm as abap.dec( 15, 0 )),
 " Quantity (QUAN)
 " --> 9876543.21
 " <-- 9876543.210
-cast( 0 as abap.quan( 13, 3 )) as lfimg_vl
+cast( 0 as abap.quan( 13, 3 )) as Quantity
 
 " Unit
 " --> Distance: 100

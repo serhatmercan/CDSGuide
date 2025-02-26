@@ -1,8 +1,8 @@
-" Default
+" Extension CDS View (Extend)
 " View
 define view ZSM_I_001 
-  as select from zsm_t_001 as T1 
-  association [0..1] to zsm_t_002 as _T2 on  _T2.key = T1.key
+  as select from zsm_t_001        as T1 
+  association [0..1] to zsm_t_002 as _T2 on _T2.key = T1.key
 {
     T1.key,
     _T2.description
