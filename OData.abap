@@ -1,11 +1,16 @@
-@AbapCatalog.sqlViewName : 'ZSM_CDS_001'
-@EndUserText.label       : 'DDL View For OData Service'
-@OData.publish           : true
+@AbapCatalog.sqlViewName: 'ZSM_CDS_001'
 
-define view ZSM_I_001 
-as select from mara {
-    key matnr,
-    mtart
+@EndUserText.label: 'DDL View For OData Service'
+
+@OData.publish: true
+
+define view ZSM_I_001
+  as select from mara
+
+{
+  key matnr,
+
+      mtart
 }
 
 " GW Client
