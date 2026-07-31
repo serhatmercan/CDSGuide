@@ -150,8 +150,7 @@ This project is licensed under the [MIT License](LICENSE) — feel free to use t
 ## 📬 Contact
 
 - **Author:** Serhat Mercan
-- **Email:** _add your preferred contact email here_
-- **GitHub:** _add your GitHub profile link here_
+- **Email:** serhatmercan94@gmail.com
 
 ---
 
