@@ -1,3 +1,16 @@
+# Local Annotations — Full Worked Example
+
+## What is it?
+
+This chapter shows local (element-level) annotations applied to a **real, complete view** built on `vbap` (Sales Document: Item Data), demonstrating how the annotations from [Annotation-Local.md](Annotation-Local.md) come together in practice.
+
+## Why is it used?
+
+Seeing the annotations in the context of a full field list makes the intent much clearer than an isolated reference list — this is the "how do I actually use this" companion to the previous chapter.
+
+## Full Example (original note)
+
+```abap
 " Local Annotation - Example for CDS Views
 define view ZSM_I_001
   as select from vbap
@@ -18,7 +31,7 @@ define view ZSM_I_001
     ]
     CapacityID,
 
-      " Analictics Detail
+      " Analytics Detail
     @AnalyticsDetails: {
         query: {
             axis: #FREE,
@@ -28,7 +41,7 @@ define view ZSM_I_001
     }
     CounterParty,
 
-      " Analictics Detail II
+      " Analytics Detail II
     @AnalyticsDetails: {
         exceptionAggregationSteps: {
         exceptionAggregationBehavior: #AVG,
@@ -119,14 +132,14 @@ define view ZSM_I_001
     @Semantics.currencyCode: true
     TransactionCurrency                                              as Currency,
 
-      " Data Visualization: Criticality - > Description
+      " Data Visualization: Criticality -> Description
     @UI.lineItem.criticality: 'QuantityCrytical'
     case
         when Quantity > 100 then 'Sufficient Stock'
         when Quantity > 10 then 'Less than 100'
         else 'Less than 10' end                                      as QuantityDescription,
 
-      " Data Visualization: Criticality - > Value
+      " Data Visualization: Criticality -> Value
       @UI.hidden: true
       case
         when Quantity > 100 then 3
@@ -146,7 +159,7 @@ define view ZSM_I_001
 
       concat('#PurchaseOrder-display?P_DOC_ID=', PurchasingDocument) as URL
 
-    " Facet(Body - > Top Of Page)
+    " Facet(Body -> Top Of Page)
     @UI.facet:[{
         id: 'Detail',
         label: 'Header',
@@ -253,3 +266,46 @@ define view ZSM_I_001
       @Semantics.user.lastChangedBy: true
       created_by,
 }
+```
+
+> ⚠️ **Illustrative, not a compilable single view.** This example intentionally packs *every* interesting annotation pattern into one field list to serve as a lookup catalog. In a real view, several things here would need adjusting before activation: two elements are named `URL` (duplicate alias), fields like `oiisocisl.lgort`/`werks` come from an alias never declared in a `FROM`, and `vehicle`/`_MaterialText` blocks appear without a trailing comma/alias in places. Treat each annotated **snippet** as copy-paste-ready in isolation, not the file as a whole.
+
+## Highlights Worth Calling Out
+
+| Pattern | What it demonstrates |
+|---|---|
+| `@UI.lineItem: [{...}, {dataAction: ..., type: #FOR_ACTION}]` | A field can carry **multiple** `@UI.lineItem` entries — one as a normal column, another declaring a UI **action** button. |
+| `virtualElement` + `virtualElementCalculatedBy` on `lfimg_vl` / `NetwrVF` | Two **calculated (virtual) fields**, both computed by the same exit class (`ZSM_CL_TOTAL_ORDER`) — see [10-Examples/Class.md](../10-Examples/Class.md) for the implementation. |
+| `QuantityDescription` / `QuantityCrytical` pair | The standard SAP pattern for **UI criticality**: one field holds the human-readable text, a second (usually `@UI.hidden`) holds the numeric criticality value (`1`/`2`/`3`) that `@UI.lineItem.criticality` points to. |
+| `@UI.facet` with `#COLLECTION` and `#LINEITEM_REFERENCE` | Defines the object page layout: a header collection facet plus a table facet pointing at an association (`_Material`). |
+| `@UI.dataPoint` + `criticalityCalculation` | Turns a plain number into a KPI/rating/progress visualization with configurable thresholds. |
+
+## Common Mistakes
+
+- ❌ Assigning two output fields the same alias (`URL` appears twice in the original notes) — CDS requires unique element names.
+- ❌ Forgetting the `key` keyword on genuinely unique fields while adding it to aggregated/calculated fields that aren't actually unique per row (e.g. `count(*) as TotalPlants` marked `key` only makes sense in very specific aggregation-view designs).
+- ❌ Mixing multiple unrelated `@UI` sub-annotations (`lineItem`, `facet`, `dataPoint`) on the same field without checking how Fiori Elements actually renders the combination — test in a running Fiori Elements preview, not just by reading the annotations.
+
+## Performance Considerations
+
+- Every `virtualElement` field triggers ABAP-side computation for the *entire* result set on every read — reserve it for fields that genuinely cannot be computed in SQL (see [10-Examples/Class.md](../10-Examples/Class.md)).
+- `@Search.fuzzinessThreshold` closer to `1.0` performs cheaper exact-ish matching; lower thresholds (more fuzziness) cost more at query time.
+
+## SAP Best Practices
+
+- Build one annotated field at a time and activate/test frequently — a view this densely annotated is much easier to get right incrementally than all at once.
+- Keep `@UI.lineItem` `position` values spaced (10, 20, 30…) so new columns can be inserted later without renumbering everything.
+- Use SAP Fiori Elements preview (in ADT or the Fiori tools) to visually confirm the effect of `@UI.facet`, `@UI.dataPoint`, and `@UI.lineItem` combinations.
+
+## Interview Notes
+
+- **Q: How do you add a UI action button to a CDS-based list report column?**
+  A: Add a second entry to that field's `@UI.lineItem` array with `type: #FOR_ACTION`, `dataAction`, and `label`.
+- **Q: How does SAP typically model a "criticality" traffic-light indicator?**
+  A: A visible text/description field annotated with `@UI.lineItem.criticality: '<OtherField>'`, pointing to a second, usually `@UI.hidden`, numeric field holding `1`/`2`/`3`.
+
+## Related Chapters
+
+- [Annotation-Local.md](Annotation-Local.md) — the annotation reference table
+- [Annotation-Global.md](Annotation-Global.md) — view-level annotations
+- [10-Examples/Class.md](../10-Examples/Class.md) — the `ZSM_CL_TOTAL_ORDER` virtual element exit class
