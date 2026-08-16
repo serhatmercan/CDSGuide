@@ -16,24 +16,26 @@ Use `$session` for context that is implicitly true for *any* caller in the curre
 ## Available Session Variables (original note)
 
 ```abap
-" Definition
-$session.client          as CurrentClient,  " => T4D
-$session.system_date     as SystemDate,     " => 2024-11-14
-$session.system_language as SystemLanguage, " => TR
-$session.user            as Username        " => XSMERCAN
+// Definition
+$session.client          as CurrentClient,  // => 100
+$session.system_date     as SystemDate,     // => 2024-11-14
+$session.system_language as SystemLanguage, // => EN
+$session.user            as Username        // => DEVELOPER01
 ```
 
 | Variable | Returns |
 |---|---|
-| `$session.client` | The current logon client (e.g. `'100'`, `'T4D'`). |
+| `$session.client` | The current logon client (e.g. `'100'`, `'800'`). |
 | `$session.system_date` | Today's date, as `abap.dats`. |
-| `$session.system_language` | The current logon language key (e.g. `'EN'`, `'TR'`). |
+| `$session.system_language` | The current logon language key (e.g. `'EN'`, `'DE'`). |
 | `$session.user` | The current logged-on user name. |
 
 ## Basic Example (original note)
 
 ```abap
-" Example
+// Example
+@AbapCatalog.sqlViewName: 'ZSM_V_SESS01'
+
 define view ZSM_I_001
 as select from mara {
     matnr,
@@ -47,17 +49,17 @@ Filters `mara` to only rows created **today**, and additionally exposes the curr
 ## `$session.system_date` in an Association Filter (original note)
 
 ```abap
-" Ex: System Date in Association
+// Ex: System Date in Association
 define root view entity ZSM_I_0005
   as select from I_BillingDocumentItem  as BDI
   association [0..1] to /sapsll/maritc  as _Maritc  on _Maritc.matnr = BDI.Product
-                                                   and _Maritc.stcts = 'TR01'
+                                                   and _Maritc.stcts = 'Z001'
                                                    and _Maritc.datab <= $session.system_date
                                                    and _Maritc.datbi >= $session.system_date
 {
-  key BDI.BillingDocument     as VbelnVF,
-  key BDI.BillingDocumentItem as PosnrVF,
-      _Maritc.ccngn           as GTIP
+  key BDI.BillingDocument     as BillingDocument,
+  key BDI.BillingDocumentItem as BillingDocumentItem,
+      _Maritc.ccngn           as CommodityCode
 }
 ```
 
@@ -66,16 +68,16 @@ This is the classic **time-dependent master data** pattern: the association's `O
 ## `$session.system_language` in a Path Expression (original note)
 
 ```abap
-" Ex: System Language
+// Ex: System Language
 define root view entity ZSD_I_0002
   as select from ZSD_I_0003 as I0003
-  association [0..1] to I_BillingDocumentItem as _BDI on _BDI.BillingDocument     = $projection.VbelnVF
-                                                     and _BDI.BillingDocumentItem = $projection.PosnrVF
+  association [0..1] to I_BillingDocumentItem as _BDI on _BDI.BillingDocument     = $projection.BillingDocument
+                                                     and _BDI.BillingDocumentItem = $projection.BillingDocumentItem
 {
-  key vbeln_vf                                                                                                  as VbelnVF,
-      posnr_vf                                                                                                  as PosnrVF,
-      _BDI._BillingDocument._SalesOrganization.SalesOrganization                                                as Vkorg,
-      _BDI._BillingDocument._SalesOrganization._Text[Language = $session.system_language].SalesOrganizationName as VkorgText
+  key billing_document                                                                                          as BillingDocument,
+      billing_document_item                                                                                     as BillingDocumentItem,
+      _BDI._BillingDocument._SalesOrganization.SalesOrganization                                                as SalesOrg,
+      _BDI._BillingDocument._SalesOrganization._Text[Language = $session.system_language].SalesOrganizationName as SalesOrgText
 }
 ```
 
@@ -84,7 +86,7 @@ A **deep path expression** (`_BDI._BillingDocument._SalesOrganization._Text`) dr
 ## `$session.system_language` with Cardinality Hint (original note)
 
 ```abap
-" Ex: System Language w/ Parameter
+// Ex: System Language w/ Parameter
 @Semantics.text: true
 _Equipment._EquipmentText[ 1:Language = $session.system_language ].EquipmentName
 ```

@@ -15,48 +15,49 @@ Apply global annotations whenever the *view as a whole* needs a behavior or piec
 ## Reference List (original note, explained)
 
 ```abap
-" Global Annotations for CDS Views
+// Global Annotations for CDS Views
 @AbapCatalog:
 
 {
   buffering: {
-    " View Buffer Property Status || w/ Type
+    // View Buffer Property Status || w/ Type
     status: #ACTIVE,
 
-    " View Buffer Property        || w/ Status
+    // View Buffer Property        || w/ Status
     type: #FULL
   },
 
   compiler: {
-    " Compare Filter Behavior: true || false
+    // Compare Filter Behavior: true || false
     compareFilter : true
-  }
+  },
 
+  // Key Derivation - > true: From CDS Key || false: From Tables
   preserveKey : true,
 
-  " View Name(SE11) - > true: From CDS Key  || false: From Tables
+  // View Name(SE11)
   sqlViewName : 'ZSM_CDS_001',
 
-  " View Enhancement Category: GROUP_BY || NONE || UNION || PROJECTION_LIST
+  // View Enhancement Category: GROUP_BY || NONE || UNION || PROJECTION_LIST
   viewEnhancementCategory :[#NONE]
 }
 
-" Check Access Control = #CHECK || #NOT_ALLOWED || #NOT_REQUIRED
+// Check Access Control = #CHECK || #NOT_ALLOWED || #NOT_REQUIRED
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 
-" Analytics Query
+// Analytics Query
 @Analytics.query : true
 
-" Client Handling Algorithm: AUTOMATED || NONE || SESSION_VARIABLE
+// Client Handling Algorithm: AUTOMATED || NONE || SESSION_VARIABLE
 @ClientHandling.algorithm : #SESSION_VARIABLE
 
-" Consumption Ranking
+// Consumption Ranking
 @Consumption.ranked : true
 
-" CDS Description
+// CDS Description
 @EndUserText.label : 'CDS Description'
 
-" Allow Extensions: true || false
+// Allow Extensions: true || false
 @Metadata.allowExtensions : true
 
 @ObjectModel:
@@ -67,26 +68,26 @@ Apply global annotations whenever the *view as a whole* needs a behavior or piec
   updateEnabled: true,
 
   usageType: {
-    " Data Class: CUSTOMIZING || MASTER || META || MIXED || ORGANIZATIONAL || TRANSACTIONAL
+    // Data Class: CUSTOMIZING || MASTER || META || MIXED || ORGANIZATIONAL || TRANSACTIONAL
     dataClass: #MIXED,
 
-    " Service Quality: A || B || C || D || X || P
+    // Service Quality: A || B || C || D || X || P
     serviceQuality: #X,
 
-    " Size Category: S || M || L || XL || XXL
+    // Size Category: S || M || L || XL || XXL
     sizeCategory: #S
   },
 
   query: {
-    " Implemented By: Class Name
+    // Implemented By: Class Name
     implementedBy: 'ABAP:ZSM_CL_IM_QUERY'
   }
 }
 
-" Display OData Service
+// Display OData Service
 @OData.publish: true
 
-" Searchable
+// Searchable
 @Search.searchable: true
 
 @UI:
@@ -138,7 +139,7 @@ Apply global annotations whenever the *view as a whole* needs a behavior or piec
   }]
 }
 
-" View Types: BASIC || COMPOSITE || CONSUMPTION || EXTENSION || DERIVATION_FUNCTION || TRANSACTIONAL
+// View Types: BASIC || COMPOSITE || CONSUMPTION || EXTENSION || DERIVATION_FUNCTION || TRANSACTIONAL
 @VDM.viewType: #CONSUMPTION
 ```
 
@@ -151,7 +152,7 @@ Apply global annotations whenever the *view as a whole* needs a behavior or piec
 | `@AbapCatalog.compiler.compareFilter` | Optimizes filter comparisons at compile time. |
 | `@AbapCatalog.preserveKey` | Keeps the key definition stable across changes for compatibility. |
 | `@AbapCatalog.viewEnhancementCategory` | Declares **how** the view may be extended: `#NONE`, `#PROJECTION_LIST` (fields only), `#UNION` (union branches), `#GROUP_BY` (aggregation). Required alongside `@Metadata.allowExtensions` for [view extensions](../03-Data-Modeling/Extend.md). |
-| `@AccessControl.authorizationCheck` | `#CHECK` enforces a DCL role (see [09-Security/AccessControl.md](../09-Security/AccessControl.md)); `#NOT_REQUIRED` skips it; `#NOT_ALLOWED` blocks direct external access. |
+| `@AccessControl.authorizationCheck` | Declares whether a DCL role is evaluated on read (see [09-Security/AccessControl.md](../09-Security/AccessControl.md)). `#CHECK` — evaluated *if* a role exists, syntax warning if none. `#NOT_REQUIRED` — same runtime behaviour, no warning. `#NOT_ALLOWED` — access control is **switched off**; any role is ignored at runtime. Note that `#NOT_ALLOWED` is the least protective value, not the most. |
 | `@Analytics.query` | Marks the view as an analytical query, consumable by SAP Analytics tools / `RSRT`. |
 | `@ClientHandling.algorithm` | `#SESSION_VARIABLE` (default, filters by session client automatically), `#AUTOMATED` (client field auto-detected), or `#NONE` (cross-client view). |
 | `@Consumption.ranked` | Enables ranking-related consumption behavior for value helps/search. |
@@ -179,14 +180,14 @@ Apply global annotations whenever the *view as a whole* needs a behavior or piec
 
 ## SAP Best Practices
 
-- Set `@AccessControl.authorizationCheck: #CHECK` by default for consumption/root views, using `#NOT_REQUIRED` only for pure interface (building-block) views not exposed directly.
+- Set `@AccessControl.authorizationCheck: #CHECK` by default for consumption/root views — and create the DCL role, since the annotation on its own enforces nothing. Use `#NOT_REQUIRED` only for pure interface (building-block) views not exposed directly.
 - Classify every custom view with `@VDM.viewType` consistently — it documents the view's role in your data model for future maintainers.
 - Keep `@ObjectModel.usageType` accurate; SAP-delivered analysis tools and even performance recommendations rely on it.
 
 ## Interview Notes
 
 - **Q: What is the difference between `@AccessControl.authorizationCheck: #CHECK` and `#NOT_REQUIRED`?**
-  A: `#CHECK` enforces the associated DCL role's `WHERE` restrictions on every read; `#NOT_REQUIRED` skips authorization checking entirely (typically used on low-level interface views that are always wrapped by a checked consumption view).
+  A: Runtime behaviour is effectively the same — an assigned DCL role is evaluated, and nothing is enforced if no role exists. The difference is design-time: `#CHECK` raises a syntax check warning when the role is missing, `#NOT_REQUIRED` does not.
 - **Q: What does `@AbapCatalog.viewEnhancementCategory` control?**
   A: Which kind of `extend view` enhancement is allowed on this view (field list, union branch, or group-by change).
 

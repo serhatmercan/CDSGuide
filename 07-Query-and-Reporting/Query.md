@@ -15,8 +15,10 @@ Use these clauses whenever the view needs to expose a filtered, grouped, or summ
 ## Field Selection (original notes)
 
 ```abap
-" Table: ZSM_T_001
-" Fields: VBELN, POSNR, AMOUNT, ERSDA, MENGE, ZZMENGE, BISMT, AUART
+// Table: ZSM_T_001
+// Fields: VBELN, POSNR, AMOUNT, ERSDA, MENGE, ZZMENGE, BISMT, AUART
+@AbapCatalog.sqlViewName: 'ZSM_V_QRY01'
+
 define view ZSM_I_001
 as select from ZSM_T_001 {
     key vbeln,
@@ -31,7 +33,9 @@ A basic view exposing a composite key (`vbeln` + `posnr`) and one data field.
 ### Selecting All Elements
 
 ```abap
-" All Elements - I: Select All Elements
+// All Elements - I: Select All Elements
+@AbapCatalog.sqlViewName: 'ZSM_V_QRY02'
+
 define view ZSM_I_001
 as select from ZSM_T_001 {
     *
@@ -39,10 +43,12 @@ as select from ZSM_T_001 {
 ```
 
 ```abap
-" All Elements - II: Select All Elements
+// All Elements - II: Select All Elements
+@AbapCatalog.sqlViewName: 'ZSM_V_QRY03'
+
 define view ZSM_I_001
 as select from ZSM_T_001 {
-    " Insert All Elements
+    // Insert All Elements
 }
 ```
 
@@ -50,8 +56,10 @@ as select from ZSM_T_001 {
 
 ## Aggregate Functions (original note)
 
+> 📌 **PARTIAL SNIPPET** — `SELECT` body only; prepend a `define view … as` (or `define view entity …`) header to make it a view.
+
 ```abap
-" Average & Count & Count(Distinct) & Min & Max & Sum
+// Average & Count & Count(Distinct) & Min & Max & Sum
 select from ZSM_T_001 {
     vbeln,
     avg(amount)                 as POAverage,
@@ -78,11 +86,13 @@ group by vbeln
 
 See [05-Filtering-and-Parameters/Condition.md](../05-Filtering-and-Parameters/Condition.md) and [03-Data-Modeling/Join.md](../03-Data-Modeling/Join.md) for the full explanation of these patterns:
 
+> 📌 **PARTIAL SNIPPET** — field list only. The aliases `zf08`, `zf09` and `zf14` refer to condition tables that would be joined in the (omitted) `FROM` clause.
+
 ```abap
-" Condition: Coalesce (Check If Exist Property I & Property II)
+// Condition: Coalesce (Check If Exist Property I & Property II)
 select from ZSM_T_001{
     key vbeln                                                                                                               as Vbeln,
-    coalesce(menge, zzmenge)                                                                                                as Menge
+    coalesce(menge, zzmenge)                                                                                                as Menge,
     coalesce(bismt, '')                                                                                                     as Bismt,
     cast(coalesce(coalesce(zf08.kbetr * zf08.kpein, zf09.kbetr * zf09.kpein), zf14.kbetr * zf14.kpein ) as abap.dec(10,2))  as Amount
 }
@@ -93,7 +103,7 @@ The last field nests `coalesce()` three levels deep — a "try condition table Z
 ## `DISTINCT`
 
 ```abap
-" Distinct
+// Distinct
 define root view entity ZSM_I_001
   as select distinct from T1
   inner join T2 on T2.number = T1.number
@@ -108,7 +118,7 @@ define root view entity ZSM_I_001
 ## Consuming a Table Function (cross-reference)
 
 ```abap
-" Function
+// Function
 define view entity ZSM_I_WORKING_DAYS
   as select from ZSM_F_WORKING_DAYS( p_client: $session.client , p_fabkl: 'PI' )
 {
@@ -127,8 +137,10 @@ See [06-Built-In-Functions/Function.md](../06-Built-In-Functions/Function.md) fo
 
 ## `GROUP BY` with a Composite Key
 
+> 📌 **PARTIAL SNIPPET** — `SELECT` body only.
+
 ```abap
-" Group By II
+// Group By II
 select from ZSM_T_001 {
     key vbeln,
     key posnr
@@ -138,8 +150,10 @@ group by vbeln, posnr
 
 ## `WHERE` Conditions (original note)
 
+> 📌 **CONCEPTUAL SNIPPET — operator catalogue, not an activatable view.** This block deliberately collects every `WHERE` operator in one place. It references `ekko`, `likp`, `vbrk`, `vbap` and the fields `s_fiscyear`/`funcarea`, none of which are declared in the `FROM` clause shown, so it will not activate as written. Read it as a syntax reference; take the operators, not the statement.
+
 ```abap
-" Where Condition
+// Where Condition
 select from ZSM_T_001 {
     key vbeln,
 
@@ -162,8 +176,10 @@ This example demonstrates the full range of `WHERE` operators: `=`, `<>`, `LIKE`
 
 ## `HAVING`
 
+> 📌 **PARTIAL SNIPPET** — the `HAVING` clause on its own; it follows the `GROUP BY` of an aggregating view.
+
 ```abap
-" Having Sum
+// Having Sum
 having sum(SNWD_SO.gross_amount) > 100000
 ```
 

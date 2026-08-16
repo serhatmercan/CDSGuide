@@ -60,7 +60,7 @@ CLASS ZSM_CL_AMDP DEFINITION
     INTERFACES:
       if_amdp_marker_hdb.
 
-    CLASS - METHODS:
+    CLASS-METHODS:
       get_data FOR TABLE FUNCTION zsm_f_amdp.
 
   PROTECTED SECTION.
@@ -120,6 +120,7 @@ Once defined, a table function is selected from **exactly like a regular CDS vie
 - ❌ Reaching for a table function/AMDP as the default approach instead of trying to model the logic declaratively first — this adds SQLScript maintenance burden and database-specific code (SQLScript is HANA-specific, unlike standard CDS which is more database-agnostic).
 - ❌ Forgetting `OPTIONS READ-ONLY` — table functions are for reading; write logic doesn't belong here.
 - ❌ Not restricting `USING` to only the entities actually needed — overly broad access surfaces are harder to review and secure.
+- ❌ Assuming a CDS entity's DCL role still applies inside the AMDP method — **AMDP does not support CDS access control**. Only ABAP SQL access *to the table function itself* can be access-controlled; the SQLScript body reads its `USING` sources directly, with no DCL evaluation. Any row-level restriction the data needs must therefore be enforced on the table function, or coded explicitly in the SQLScript. See [09-Security/AccessControl.md](../09-Security/AccessControl.md).
 
 ## Performance Considerations
 

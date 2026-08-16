@@ -21,8 +21,12 @@ Use `extend view` whenever you need to add fields to a view you don't own (SAP s
 ### Base View
 
 ```abap
-" Extension CDS View(Extend)
-" View
+// Extension CDS View(Extend)
+// View
+@AbapCatalog.sqlViewName: 'ZSM_V_EXT001'
+@Metadata.allowExtensions: true
+@AbapCatalog.viewEnhancementCategory: [#PROJECTION_LIST]
+
 define view ZSM_I_001
   as select from zsm_t_001 as T1
 
@@ -37,7 +41,7 @@ define view ZSM_I_001
 ### Extension
 
 ```abap
-" Extension View(Extend)
+// Extension View(Extend)
 @AbapCatalog.sqlViewAppendName: 'ZSM_I_EXT_001'
 @EndUserText.label: 'ZSM_I_001 Extend View'
 
@@ -48,7 +52,7 @@ extend view ZSM_I_001 with ZSM_I_EXT_001
   _T2.explanation
 }
 
-" => ZSM_I_001 = Key, Description, Value, Explanation
+// => ZSM_I_001 = Key, Description, Value, Explanation
 ```
 
 ### Keyword-by-keyword explanation

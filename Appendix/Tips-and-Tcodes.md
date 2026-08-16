@@ -6,11 +6,23 @@ A quick-reference collection of ABAP Development Tools (ADT/Eclipse) navigation 
 
 ## Comment Syntax Reference
 
-| Style | Syntax | Used in |
+ABAP source and CDS source use **different** comment characters. Mixing them up is one of the most common first-time errors when moving between a report and a DDL source.
+
+**ABAP** (reports, classes, AMDP method bodies):
+
+| Style | Syntax | Notes |
 |---|---|---|
-| Single line | `// comment` | Classic ABAP (inline in newer syntax) |
-| Multi-line | `/* comment */` | Classic ABAP |
-| CDS DDL comment | `" comment` | CDS view source (used throughout this guide's code samples) |
+| Full-line comment | `* comment` | Asterisk must be in the **first column** |
+| Line / end-of-line comment | `" comment` | Comments out the rest of the line |
+
+**CDS DDL and DCL** (`define view`, `define view entity`, `define table function`, `define role`):
+
+| Style | Syntax | Notes |
+|---|---|---|
+| Line comment | `// comment` | Runs to the end of the line — the recommended form |
+| Inline / multi-line comment | `/* comment */` | Can be used within a line or across several lines |
+
+> ⚠️ `"` is **not** a comment character in CDS DDL/DCL, and `//` `/* */` have no meaning in ABAP source. All CDS code samples in this guide use `//`; all ABAP samples use `"`.
 
 ## ADT (Eclipse) Project Explorer — Finding Objects
 

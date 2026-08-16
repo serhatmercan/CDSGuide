@@ -31,9 +31,9 @@ define view ZSM_I_001
       mtart
 }
 
-" GW Client
-" Service Name: ZSM_I_001_CDS
-" URI: /sap/opu/odata/sap/ZSM_I_001_CDS/ZSM_I_001
+// GW Client
+// Service Name: ZSM_I_001_CDS
+// URI: /sap/opu/odata/sap/ZSM_I_001_CDS/ZSM_I_001
 ```
 
 ### What happens when you activate this

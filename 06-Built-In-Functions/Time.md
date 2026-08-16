@@ -15,12 +15,12 @@ Use `tims_is_valid` whenever a time field's input cannot be trusted to always be
 ## Examples (original notes, with output annotated)
 
 ```abap
-" Validation: Return => (0 = Invalid || 1 = Valid)
+// Validation: Return => (0 = Invalid || 1 = Valid)
 tims_is_valid( Main.DocumentTime ) = 1
 
-" Validation & Conversion
-" --> '123456' || '999999' || NULL
-" <--  123456  ||  000000  || 000000
+// Validation & Conversion
+// --> '123456' || '999999' || NULL
+// <--  123456  ||  000000  || 000000
 case when tims_is_valid( Main.DocumentTime ) = 1 then tims_to_timn( Main.DocumentTime, 'NULL' )
                                                  else tims_to_timn( cast( '000000' as abap.tims ), 'NULL' )
 end as ConvertedDocumentTime

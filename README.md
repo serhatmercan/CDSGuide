@@ -102,11 +102,13 @@ Follow the chapters in numeric order if you are new to CDS. If you already know 
 
 ## 🛠️ Recommended SAP Versions
 
-- **SAP S/4HANA 1909** or higher (on-premise) — full CDS view entity and RAP support.
-- **SAP S/4HANA Cloud** / **ABAP Environment (Steampunk)** — for cloud-ready, released CDS artifacts.
-- **NetWeaver 7.50+ / SAP ERP with HANA DB** — for classic CDS view (`define view`) syntax.
+Availability is stated per **Application Server ABAP** release, since that is what the syntax actually depends on:
 
-> ⚠️ Some syntax shown here (e.g. `define view entity`, RAP-related annotations) is only available from **7.51+ / S/4HANA 1809+** onward. Older systems may only support the classic `define view` syntax.
+- **AS ABAP 7.40+** — classic CDS views (`define view`), the syntax used by most examples in this guide.
+- **AS ABAP 7.55+** — CDS **view entities** (`define view entity`). As of 7.55, SAP recommends view entities over CDS DDIC-based views for new development.
+- **SAP BTP ABAP Environment / ABAP Cloud** — for cloud-ready development against released APIs.
+
+> ⚠️ `define view entity` does not exist before AS ABAP 7.55. On older systems, only the classic `define view` syntax is available. Examples in this guide use both, and the chapters state which is which.
 
 ## ✅ SAP Prerequisites
 

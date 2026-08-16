@@ -20,27 +20,39 @@ CDS views are meant to be **consumed**. Reading them from ABAP is the most direc
 REPORT zsm_p_001.
 
 START-OF-SELECTION.
-  SELECT * FROM zsm_cds_001
-    INTO TABLE @DATA(lt_cds). " SQL View Name: w/ Mandt
-
+  " Read the CDS entity — this is the correct, supported way
   SELECT * FROM zsm_i_001
-    INTO TABLE @DATA(lt_view). " DDL View Name: w/out Mandt
+    INTO TABLE @DATA(lt_view).
 
+  " Parameterized CDS entity
   SELECT *
     FROM zsm_v_002( p_meins = 'ST' )
-    INTO TABLE @DATA(lt_parameters_view). " w/ Parameters
+    INTO TABLE @DATA(lt_parameters_view).
 ```
 
 ### Explanation
 
 | Line | What it does |
 |---|---|
-| `SELECT * FROM zsm_cds_001` | Reads via the **SQL view name** (`@AbapCatalog.sqlViewName`) — this is the physical database view name as seen in `SE11`. It typically **includes** the client field (`MANDT`) as a regular column since it is a plain DB view. |
-| `SELECT * FROM zsm_i_001` | Reads via the **DDL source name** (the CDS entity name, e.g. `ZSM_I_001`) — the client field is handled automatically/implicitly by client handling, so it is **not** returned as a normal column. |
+| `SELECT * FROM zsm_i_001` | Reads the **CDS entity** by its DDL source name (e.g. `ZSM_I_001`). Client handling is implicit, so the client field is **not** returned as a normal column. This is the name RAP, OData and analytics tooling expect. |
 | `SELECT * FROM zsm_v_002( p_meins = 'ST' )` | Reads a **parameterized** CDS view, passing input parameter values in parentheses. See [05-Filtering-and-Parameters/Parameters.md](../05-Filtering-and-Parameters/Parameters.md). |
-| `@DATA(lt_cds)` | Inline declaration — creates the internal table on the fly with the exact structure of the selected fields. |
+| `@DATA(lt_view)` | Inline declaration — creates the internal table on the fly with the exact structure of the selected fields. |
 
-> ⚠️ **SQL view name vs. DDL/CDS entity name** — this is a very common interview and real-world gotcha. Always prefer selecting by the **CDS entity name** (`ZSM_I_001`) in new ABAP code; it is client-aware and is the name RAP/OData tooling expects. The SQL view name is mostly useful for direct HANA-level tooling (e.g. calculation views, `SE11` browsing).
+## Three Names, One Model — and Only One Consumption API
+
+This is a very common interview and real-world question, and the original version of these notes treated the two names as interchangeable read paths. They are not.
+
+| What | What it is | Use it to read data? |
+|---|---|---|
+| **CDS entity** (`ZSM_I_001`) | The CDS artifact itself — the DDL source name. Carries the full model: annotations, associations, client handling, access control. | ✅ **Yes — this is the consumption API.** |
+| **Generated DDIC/database view** (`ZSM_CDS_001`) | For a *classic* `define view`, `@AbapCatalog.sqlViewName` generates a plain DDIC/database view alongside the entity. It exposes the raw columns only — including the client field as an ordinary column. | ❌ **No.** |
+| **CDS view entity** (`define view entity`) | Has **no** generated SQL view at all — `@AbapCatalog.sqlViewName` does not exist for view entities, so there is nothing else to select from. | — (only the entity exists) |
+
+> ⚠️ **Do not read the generated database view from ABAP.** SAP documents use of the CDS database view in ABAP SQL read statements as **obsolete**, and it is **rejected by the syntax check in strict mode from Release 7.50**. SAP's guidance is to use only the CDS entity, because only the entity covers all properties of the model.
+
+> 🔐 **Security implication.** Implicit CDS access control (DCL) is evaluated only when the **CDS entity** is accessed via ABAP SQL or an SADL query. Reading the generated database view instead — or reaching the data through Native SQL (ADBC, `EXEC SQL`) — does **not** evaluate the entity's DCL role, so every row-level restriction is silently skipped. The difference between the two names is therefore not cosmetic and not primarily about `MANDT`: one path is access-controlled and one is not. See [09-Security/AccessControl.md](../09-Security/AccessControl.md).
+
+The generated view remains visible in `SE11` and is useful for *inspecting* what was activated. Browsing it is fine; consuming it from application code is not.
 
 ## Additional Example — Filtering and Field List
 
@@ -61,7 +73,7 @@ Selecting only the fields you need (rather than `*`) reduces transferred data an
 
 ## Common Mistakes
 
-- ❌ Selecting from the SQL view name and forgetting that `MANDT` now appears as a normal field — leads to `TYPE MISMATCH` errors when mapping into a structure that doesn't have `MANDT`.
+- ❌ Selecting from the generated database view instead of the CDS entity — obsolete, rejected in ABAP SQL strict mode from 7.50, bypasses CDS access control, and drops the entity's semantics (client handling, associations, annotations). The stray `MANDT` column is the least of the problems.
 - ❌ Not checking `sy-subrc` after the `SELECT`.
 - ❌ Selecting the entire view (`*`) when only a handful of fields are actually used.
 
@@ -72,15 +84,15 @@ Selecting only the fields you need (rather than `*`) reduces transferred data an
 
 ## SAP Best Practices
 
-- Always read CDS views through their **DDL entity name**, not the generated SQL view name, unless you have a specific technical reason (e.g. native SQL tooling).
+- Always read CDS views through their **CDS entity name**. The generated database view is not an alternative consumption API — it is an implementation artifact of classic `define view`, and it does not exist at all for view entities.
 - Keep ABAP `SELECT`s thin — let the CDS view do the joining/aggregation.
 
 ## Interview Notes
 
 - **Q: Can you use a CDS view in an `OPEN SQL` `SELECT` just like a table?**
   A: Yes — activated CDS views appear in the ABAP Dictionary and can be used in `SELECT`, `JOIN`, and `FOR ALL ENTRIES` statements like any other DDIC object.
-- **Q: What happens to the client field (`MANDT`) when reading via the CDS name vs. the SQL view name?**
-  A: Through the CDS entity name, client handling is automatic and `MANDT` is not exposed as a field; through the raw SQL view name, `MANDT` behaves like a normal column.
+- **Q: What is the difference between reading the CDS entity and reading its generated database view?**
+  A: The CDS entity is the consumption API — it applies client handling, associations, annotations and CDS access control. The generated database view is a plain DDIC view exposing raw columns (including `MANDT`), evaluates **no** DCL role, is obsolete in ABAP SQL, and is rejected in strict mode from 7.50. CDS view entities have no generated view at all.
 
 ## Related Chapters
 

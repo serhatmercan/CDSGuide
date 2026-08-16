@@ -22,11 +22,13 @@ Use `CASE` whenever a field's value depends on a condition more complex than a s
 
 ## Examples (original notes)
 
+> 📌 The examples in this section are **partial snippets** — single `CASE` expressions as they would appear inside a view's element list. Wrap them in a `define view` / `define view entity` with a matching `FROM` clause to use them.
+
 ### Simple CASE — Day of the Week
 
 ```abap
-" Case w/ Date + Mod: Get the Day of the Week for a Given Date
-" Note: The 'dats_days_between' Function is used to Calculate the Number of Days Between Two Dates
+// Case w/ Date + Mod: Get the Day of the Week for a Given Date
+// Note: The 'dats_days_between' Function is used to Calculate the Number of Days Between Two Dates
 case mod( dats_days_between( cast( '20250101' as abap.dats ), $projection.due_date ), 7 )
     when 0 then 'Monday'
     when 1 then 'Tuesday'
@@ -45,7 +47,7 @@ This combines a **simple CASE** with the [Date](../06-Built-In-Functions/Date.md
 ### Simple CASE — Sign Flipping by Indicator
 
 ```abap
-" Case w/ Indicator: Get the Indicator Value
+// Case w/ Indicator: Get the Indicator Value
 case matdoc.shkzg
    when 'H' then - matdoc.menge
    when 'S' then + matdoc.menge
@@ -59,7 +61,7 @@ A very common MM/FI pattern: `shkzg` ("debit/credit indicator") is `H` (Haben/Cr
 ### Simple CASE — Unit of Measure Flag
 
 ```abap
-" Case w/ String: Get the Unit of Measure
+// Case w/ String: Get the Unit of Measure
 case mara.meins
     when 'ST' then 'X'
     else ''
@@ -71,7 +73,7 @@ A simple two-way flag: `'X'` if the base unit is "piece" (`ST`), blank otherwise
 ### Searched CASE — Nested Status Logic
 
 ```abap
-" Condition: Case
+// Condition: Case
 select from ZSM_T_001{
     key vbeln                                   as Vbeln,
     case when T1.menge is null then T1.zzmenge

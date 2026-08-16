@@ -17,7 +17,8 @@ Use input parameters when the view's logic genuinely depends on a caller-supplie
 ## Syntax and Example (original note)
 
 ```abap
-" Examples of Parameters in CDS View
+// Examples of Parameters in CDS View
+@AbapCatalog.sqlViewName: 'ZSM_V_PARAM01'
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Parameters'
 
@@ -28,6 +29,7 @@ define view ZSM_I_002
     @Environment.systemField: #SYSTEM_DATE
     p_key_date                            : vdm_v_key_date,
 
+    p_datab                               : abap.dats,
     p_meins                               : meins,
     p_mtart                               : mtart,
 
@@ -41,8 +43,7 @@ define view ZSM_I_002
   matkl                                                      as MaterialGroup,
   meins                                                      as BaseUnit,
 
-  cast(substring($parameters.p_datab, 1, 6) as abap.numc(6)) as Spmon,
-  " Optional
+  cast(substring($parameters.p_datab, 1, 6) as abap.numc(6)) as Spmon
 }
 
 where meins  = $parameters.p_meins
@@ -60,7 +61,7 @@ where meins  = $parameters.p_meins
 | `@Consumption.defaultValue: 5` | Supplies a default value when the caller omits the parameter, used in UI/OData value-help scenarios. |
 | `$parameters.<name>` | References a parameter's value anywhere inside the view (field list, `WHERE`, further associations). |
 
-> ⚠️ The `WHERE` clause above references `$parameters.p_datab`, but the declared parameter list only defines `p_displaycurrency`, `p_key_date`, `p_meins`, `p_mtart`, and `P_number_of_years_of_time_to_maturity` — there is no `p_datab` parameter declared. In a real view this would fail activation; if a "date from" filter is intended, add a matching `p_datab : abap.dats` (or reuse `p_key_date`) to the parameter list.
+> 📝 **Corrected from the original note.** The original parameter list did not declare `p_datab`, even though the field list and `WHERE` clause both referenced `$parameters.p_datab` — which would fail activation. The declaration `p_datab : abap.dats` has been added above. Referencing a `$parameters.<name>` that was never declared is one of the most common copy-paste errors when reusing a `WHERE` clause across similar views. The original note also left a trailing comma after the last element, which is likewise invalid.
 
 ## Calling a Parameterized View
 
@@ -75,7 +76,7 @@ See also [02-CDS-Basics/Program.md](../02-CDS-Basics/Program.md) for using param
 ## Calling Another Parameterized View (original note)
 
 ```abap
-" Call Another Parameters View
+// Call Another Parameters View
 define root view entity ZSD_I_0002
   with parameters
     p_datab                               : abap.dats,
@@ -104,7 +105,7 @@ A parameterized view can pass its own parameters straight through to a *nested* 
 ## Joining a Parameterized View (original note, corrected)
 
 ```abap
-" Call Another Parameters View w/ Left Outer Join
+// Call Another Parameters View w/ Left Outer Join
 define root view entity ZSD_I_0003
   as select from zsd_i_0001 as I0001
 
@@ -113,7 +114,7 @@ define root view entity ZSD_I_0003
 
 {
   key I0001.Material,
-      I0002.KonsimentoDate
+      I0002.BillOfLadingDate
 }
 ```
 

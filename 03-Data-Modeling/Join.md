@@ -20,22 +20,26 @@ Use a join when the related data is **mandatory** for every consumer of the view
 > The cross join is a join operation that produces the Cartesian product of two tables.
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_JOIN01'
+
 define view ZSM_I_001
   as select from ekko
-  cross join ekpo on ekpo.ebeln = ekko.ebeln
+  cross join ekpo
   {
     ekko.ebeln,
     ekpo.ebelp
   }
 ```
 
-> ⚠️ In standard SQL, `CROSS JOIN` has **no** `ON` condition — it multiplies every row of the left table with every row of the right table. The `on` clause in this snippet is technically written as an `INNER JOIN` would be. If you need a true Cartesian product, omit the `on` condition entirely; if you need matched rows, use `inner join` (below) instead. This is a good example of why it's worth double-checking generated SQL for any join type you're not 100% sure about.
+> ⚠️ **Corrected from the original note.** The original snippet wrote `cross join ekpo on ekpo.ebeln = ekko.ebeln`. A `CROSS JOIN` takes **no** `ON` condition — it multiplies every row of the left table with every row of the right table. The `on` clause has been removed above so the example is a genuine Cartesian product. If you need matched rows instead, use `inner join` (below).
 
 ### Inner Join
 
 > The inner join is a join operation that produces the result of the intersection of two tables.
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_JOIN02'
+
 define view ZSM_I_001
   as select from ekko
   inner join ekpo on ekpo.ebeln = ekko.ebeln
@@ -52,6 +56,8 @@ Only rows that have a match in **both** `ekko` (PO header) and `ekpo` (PO item) 
 > The left outer join is a join operation that produces the result of the intersection of two tables, plus all the rows from the left table that do not have a match in the right table.
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_JOIN03'
+
 define view ZSM_I_001
   as select from ekko
   left outer join ekpo on ekpo.ebeln = ekko.ebeln
@@ -66,6 +72,8 @@ All `ekko` rows are kept, even if there is no matching `ekpo` row (the `ekpo` fi
 ### Left Outer Join — Fallback with `CASE WHEN`
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_JOIN04'
+
 define view ZSM_I_001
   as select from ZSM_T_001 as T1
   left outer join ZSM_T_002 as T2 on T2.matnr = T1.matnr and T2.lgort = T1.lgort
@@ -75,7 +83,7 @@ define view ZSM_I_001
     case when T2.menge is null then T3.menge
          else T2.menge
      end                                      as Quantity
-}
+  }
 ```
 
 A classic "prefer table T2, fall back to T3" pattern: if `T2.menge` is not found (i.e. `NULL` after the left outer join), use `T3.menge` instead.
@@ -83,6 +91,8 @@ A classic "prefer table T2, fall back to T3" pattern: if `T2.menge` is not found
 ### Left Outer Join — Fallback with `COALESCE`
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_JOIN05'
+
 define view ZSM_I_001
   as select from ZSM_T_001  as T1
   left outer join ZSM_T_002 as T2 on T2.matnr = T1.matnr and T2.lgort = T1.lgort
@@ -90,7 +100,7 @@ define view ZSM_I_001
   {
     T1.matnr                    as MaterialNumber,
     coalesce(T2.menge,T3.menge) as Quantity
-}
+  }
 ```
 
 `COALESCE(a, b)` returns the first non-`NULL` value — a shorter equivalent of the `CASE WHEN ... IS NULL` pattern above. Prefer `COALESCE` for simple "use this, otherwise that" fallbacks; reserve `CASE WHEN` for conditions beyond a plain null-check (see [05-Filtering-and-Parameters/Condition.md](../05-Filtering-and-Parameters/Condition.md)).
@@ -100,6 +110,8 @@ define view ZSM_I_001
 > The right outer join is a join operation that produces the result of the intersection of two tables, plus all the rows from the right table that do not have a match in the left table.
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_JOIN06'
+
 define view ZSM_I_001
   as select from ekko
   right outer join ekpo on ekpo.ebeln = ekko.ebeln
@@ -122,7 +134,7 @@ define view ZSM_I_001
 
 ## Common Mistakes
 
-- ❌ Using `CROSS JOIN` with an `ON` condition, expecting it to behave like `INNER JOIN` — mixing the two concepts leads to confusing generated SQL.
+- ❌ Writing `CROSS JOIN ... ON ...` — a cross join takes no `ON` condition. If you need a matching condition, you want `INNER JOIN`.
 - ❌ Chaining many `LEFT OUTER JOIN`s and forgetting that any field from the joined table can now be `NULL` — always handle with `COALESCE`/`CASE WHEN` where a non-null default matters.
 - ❌ Joining on a non-indexed field, causing full table scans on large tables.
 

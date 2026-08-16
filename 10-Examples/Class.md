@@ -122,27 +122,28 @@ CLASS zsm_cl_total_order IMPLEMENTATION.
         <lfs_data>-fklmg    += ls_inv_dlv-fklmg.
       ENDLOOP.
 
+      " Pivot: map each licence type into its own set of output fields
       CASE <lfs_data>-lictp.
-        WHEN 'Z010'.
-          <lfs_data>-zadklno  = <lfs_data>-oih_licin_va.
-          <lfs_data>-zadkln   = <lfs_data>-lctxt_va.
-          <lfs_data>-zadklt   = <lfs_data>-datab_va.
-          <lfs_data>-zadkllgt = <lfs_data>-datbi_va.
-        WHEN 'Z011'.
-          <lfs_data>-zihrlisno = <lfs_data>-oih_licin_va.
-          <lfs_data>-zihrln    = <lfs_data>-lctxt_va.
-          <lfs_data>-zihrlt    = <lfs_data>-datab_va.
-          <lfs_data>-zihrllgt  = <lfs_data>-datbi_va.
-        WHEN 'Z012'.
-          <lfs_data>-zmdnyno  = <lfs_data>-oih_licin_va.
-          <lfs_data>-zmdynx   = <lfs_data>-lctxt_va.
-          <lfs_data>-zmdnyt   = <lfs_data>-datab_va.
-          <lfs_data>-zmdnylgt = <lfs_data>-datbi_va.
-        WHEN 'Z020'.
-          <lfs_data>-zlpgltno = <lfs_data>-oih_licin_va.
-          <lfs_data>-zlpgln   = <lfs_data>-lctxt_va.
-          <lfs_data>-zlpglt   = <lfs_data>-datab_va.
-          <lfs_data>-zlpglgt  = <lfs_data>-datbi_va.
+        WHEN 'Z001'.
+          <lfs_data>-zlicense_a_no   = <lfs_data>-license_no_va.
+          <lfs_data>-zlicense_a_txt  = <lfs_data>-license_txt_va.
+          <lfs_data>-zlicense_a_from = <lfs_data>-datab_va.
+          <lfs_data>-zlicense_a_to   = <lfs_data>-datbi_va.
+        WHEN 'Z002'.
+          <lfs_data>-zlicense_b_no   = <lfs_data>-license_no_va.
+          <lfs_data>-zlicense_b_txt  = <lfs_data>-license_txt_va.
+          <lfs_data>-zlicense_b_from = <lfs_data>-datab_va.
+          <lfs_data>-zlicense_b_to   = <lfs_data>-datbi_va.
+        WHEN 'Z003'.
+          <lfs_data>-zlicense_c_no   = <lfs_data>-license_no_va.
+          <lfs_data>-zlicense_c_txt  = <lfs_data>-license_txt_va.
+          <lfs_data>-zlicense_c_from = <lfs_data>-datab_va.
+          <lfs_data>-zlicense_c_to   = <lfs_data>-datbi_va.
+        WHEN 'Z004'.
+          <lfs_data>-zlicense_d_no   = <lfs_data>-license_no_va.
+          <lfs_data>-zlicense_d_txt  = <lfs_data>-license_txt_va.
+          <lfs_data>-zlicense_d_from = <lfs_data>-datab_va.
+          <lfs_data>-zlicense_d_to   = <lfs_data>-datbi_va.
       ENDCASE.
     ENDLOOP.
 
@@ -160,7 +161,7 @@ ENDCLASS.
 2. **Mass-fetch delivery data** — `SELECT ... FOR ALL ENTRIES IN @lt_data` retrieves all delivery rows related to the orders currently being processed, **in a single round trip** rather than one `SELECT` per order row (the classic anti-pattern of selecting inside a loop).
 3. **Mass-fetch invoice data — twice** — once for invoices tied to deliveries (`lt_inv_dlv`), once for invoices tied directly to the order (`lt_inv_ord`), since invoices in SD can reference either a delivery or an order depending on the billing scenario.
 4. **Aggregate via nested `LOOP ... WHERE`** — for each order row, the matching delivery/invoice rows are summed into running totals (`+=`). This is standard ABAP aggregation over an internal table, done once all the mass-fetches are complete.
-5. **`CASE <lfs_data>-lictp`** — maps a license/certificate type code (`lictp`) to one of several sets of output fields, depending on which "slot" (`Z010`/`Z011`/`Z012`/`Z020`) the license data belongs in — a business-specific pivot pattern.
+5. **`CASE <lfs_data>-lictp`** — maps a license/certificate type code (`lictp`) to one of several sets of output fields, depending on which "slot" (`Z001`–`Z004`) the license data belongs in — a business-specific pivot pattern. This is exactly the kind of column-per-category reshaping that is awkward to express declaratively and reads naturally in ABAP.
 6. **`CORRESPONDING #( lt_data )`** — the enriched working table is copied back into the framework's expected output structure (`ct_calculated_data`).
 
 ## Common Mistakes
@@ -191,5 +192,5 @@ ENDCLASS.
 ## Related Chapters
 
 - [04-CDS-Annotations/Annotation-Local.md](../04-CDS-Annotations/Annotation-Local.md) — the `virtualElement` / `virtualElementCalculatedBy` annotations that invoke this class
-- [04-CDS-Annotations/Annotation-LocalEx.md](../04-CDS-Annotations/Annotation-LocalEx.md) — the CDS fields (`lfimg_vl`, `NetwrVF`) calculated by this exact class
+- [04-CDS-Annotations/Annotation-LocalEx.md](../04-CDS-Annotations/Annotation-LocalEx.md) — the CDS fields (`TotalQuantity`, `TotalNetAmount`) calculated by this exact class
 - [06-Built-In-Functions/Function.md](../06-Built-In-Functions/Function.md) — AMDP/table functions, a different way to push complex logic closer to the data

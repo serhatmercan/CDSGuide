@@ -16,19 +16,20 @@ Use `define view` (or its modern successor `define view entity` — see note bel
 
 > 📝 **`define view` vs. `define view entity`**
 >
-> | | `define view` | `define view entity` |
+> | | `define view` (DDIC-based) | `define view entity` |
 > |---|---|---|
-> | Introduced | Classic CDS (7.40+) | ABAP 7.51+ / S/4HANA 1809+ |
+> | Available from | Application Server ABAP 7.40 | Application Server ABAP **7.55** |
+> | Generated DDIC/SQL view | Yes — named via `@AbapCatalog.sqlViewName` | **None** — the entity is the only object |
 > | Association target type | View | View Entity |
-> | Used for RAP | ❌ Not directly | ✅ Yes |
+> | Used for RAP | Supported | Supported — and recommended |
 > | Recommended for new development | No | **Yes** |
 >
-> SAP recommends using `define view entity` for all new development on modern releases. The classic `define view` syntax is preserved throughout this guide because it is still widely found in existing systems and is what these original notes were written against — but favor `entity` syntax for greenfield projects.
+> As of Application Server ABAP 7.55, CDS view entities are available and SAP recommends them over CDS DDIC-based views. The classic `define view` syntax is preserved throughout this guide because it is still widely found in existing systems and is what these original notes were written against — but favor view entities for greenfield projects.
 
 ## Basic Syntax (original note)
 
 ```abap
-" Main CDS Template
+// Main CDS Template
 @AbapCatalog.sqlViewName            : 'ZSM_V_001'
 @AccessControl.authorizationCheck   : #NOT_REQUIRED
 @EndUserText.label                  : 'Main CDS'
@@ -55,11 +56,10 @@ define view ZSM_I_001
 ## Modern Example (`define view entity`)
 
 ```abap
-@AbapCatalog.sqlViewName: 'ZSM_V_001'
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Main CDS (View Entity)'
 
-define view entity ZSM_I_001
+define view entity ZSM_I_002
   as select from mara
 {
   key matnr as Material,
@@ -67,6 +67,8 @@ define view entity ZSM_I_001
       meins as BaseUnit
 }
 ```
+
+> 💡 Note what is **absent**: there is no `@AbapCatalog.sqlViewName`. A view entity has no generated DDIC/SQL view, so the annotation does not apply to it and specifying it is an error. The entity name is the only name the object has — which is exactly why view entities are simpler to work with than DDIC-based views.
 
 > 💡 Every element exposed as a **key** should be marked with the `key` keyword. This is mandatory in `define view entity` and strongly recommended in classic `define view` — without a key, consumers (like OData or RAP) cannot uniquely identify rows.
 

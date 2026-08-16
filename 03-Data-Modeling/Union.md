@@ -26,6 +26,8 @@ Use `UNION`/`UNION ALL` when you need to **stack** compatible row sets from diff
 ## Basic Syntax Example (original note)
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_UNION01'
+
 define view ZSM_CDS_TEST_VIEW
   as select from ZSM_T_001
 
@@ -45,6 +47,8 @@ Each branch of the union must expose the **same number of columns**, in the **sa
 
 ## Union Branch with a `WHERE` Condition (original note)
 
+> 📌 **PARTIAL SNIPPET** — a single union branch, shown on its own. It must follow a first branch carrying the full `define view … as select from …` header (see the complete example below).
+
 ```abap
 union all
   select from ZSM_T_002
@@ -61,6 +65,8 @@ Each individual branch of a `UNION`/`UNION ALL` can carry its own `WHERE` condit
 > ⚠️ **Correction note:** the original notes also contained a branch written as `union / select from ZSM_T_002 / as select from ZSM_T_001 { column1 } where column1 > 10` — mixing `union` (which expects a bare `select from ...`) with the `define view ... as select from ...` view-header syntax is not valid CDS. A `UNION`/`UNION ALL` branch after the first is always a plain `select from <source> { ... }` (optionally with `where`), **without** a leading `define view` or `as`. A corrected, complete three-way union looks like this:
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_UNION02'
+
 define view ZSM_CDS_TEST_VIEW
   as select from ZSM_T_001
   {

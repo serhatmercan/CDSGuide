@@ -42,10 +42,12 @@ association [<cardinality>] to <target> as _Alias on <condition>
 ### Default Cardinality
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_ASSOC01'
+
 define view ZSM_I_001
   as select from mara as Mara
 
-  association [0..1] to makt as _Makt on _Makt.Matnr = Mara.Matnr
+  association [0..1] to makt as _Makt on _Makt.matnr = Mara.matnr
 
 {
   key Mara.matnr  as MaterialNo,
@@ -59,32 +61,38 @@ Here `_Makt` is declared `[0..1]` — for one material there is at most one matc
 ### Multi Cardinality
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_ASSOC02'
+
 define view ZSM_I_001
   as select from snwd_so as SO
 
   association [1..*] to snwd_so_i as _SOI on _SOI.parent_key = $projection.SalesOrder
-  association [1..1] to snwd_bpa  as _BPA on _BPA.node_key = $projection.SalesOrder
+  association [1..1] to snwd_bpa  as _BPA on _BPA.node_key   = SO.buyer_guid
 
 {
-  key SO.node_key      as SalesOrder,
+  key SO.node_key        as SalesOrder,
 
-      SO.so_id         as SalesOrderID,
-      SO.currency_code as Currency,
-      SO.gross_amount  as GrossAmount,
-      SO.net_amount    as NetAmount,
+      SO.so_id           as SalesOrderID,
+      SO.currency_code   as Currency,
+      SO.gross_amount    as GrossAmount,
+      SO.net_amount      as NetAmount,
 
-      _SOI.tax_amount  as TaxAmount
-      _BPA.phone_number   as PhoneNumber
+      _SOI.tax_amount    as TaxAmount,
+      _BPA.phone_number  as PhoneNumber
 }
 ```
 
-`_SOI` (Sales Order Items) is `[1..*]` — a sales order always has at least one item and can have many. `_BPA` (Business Partner Address) is `[1..1]` — exactly one related row is expected.
+`_SOI` (Sales Order Items) is `[1..*]` — a sales order always has at least one item and can have many. `_BPA` (Business Partner) is `[1..1]` — exactly one related row is expected.
 
-> ⚠️ Note the missing comma after `_SOI.tax_amount` in the original snippet above — in real DDL source this is a syntax error; every element in the list except the last must be comma-separated. Keep an eye out for this when copying quick notes into a live CDS editor.
+> ⚠️ **Two corrections from the original note.** (1) The comma after `_SOI.tax_amount` was missing — in real DDL source that is a syntax error, since every element except the last must be comma-separated. (2) The `_BPA` association joined the business-partner key to the *sales order* key (`_BPA.node_key = $projection.SalesOrder`), which is not a meaningful relationship; it now joins on the order's buyer reference instead.
+
+> 📝 **A `[1..*]` path in the element list is allowed** — but be deliberate about it. Exposing `_SOI.tax_amount` from a to-many association can **multiply the result rows** (one row per matching item), which changes the granularity of the view. That is sometimes exactly what you want; when it is not, filter the path down to a single row (see *Filter Cardinality*, below) or model the relationship as a separate item view.
 
 ### Filter Cardinality (Association with a Filter Condition)
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_ASSOC03'
+
 define view ZSM_I_001
   as select from snwd_pd as Product
 
@@ -107,7 +115,7 @@ The `[language = $session.system_language]` filter is applied **on the associati
 define view entity ZSM_I_001
   as select from zsm_t_0001 as T1
 
-  association to parent ZOG_I_002 as _T2 on _T2.UUID = $projection.UUID
+  association to parent ZSM_I_002 as _T2 on _T2.UUID = $projection.UUID
 
 {
   key T1.UUID,
@@ -121,14 +129,16 @@ define view entity ZSM_I_001
 ### Projection Cardinality
 
 ```abap
+@AbapCatalog.sqlViewName: 'ZSM_V_ASSOC04'
+
 define view ZSM_I_001
   as select from mara as Mara
 
   association [0..1] to makt as _Makt on _Makt.matnr = $projection.MaterialNo
 
 {
-  Mara.matnr  as MaterialNo,
-  _Makt.maktx as MaterialText
+  key Mara.matnr  as MaterialNo,
+      _Makt.maktx as MaterialText
 }
 ```
 

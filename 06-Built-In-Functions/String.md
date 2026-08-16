@@ -15,57 +15,57 @@ Use CDS string functions whenever the transformation can be expressed declarativ
 ## Examples (original notes, with output annotated)
 
 ```abap
-" String Functions in ABAP
-Name1 = 'Dilaray'.
-Name2 = 'Serhat'.
+// String Functions in CDS
+// Assume: Text1 = 'Example'  (7 characters)
+//         Text2 = 'Sample'   (6 characters)
 
-" Concat: Concatenate Strings
-concat(Name1, Name2)             " => DilaraySerhat
+// Concat: Concatenate Strings
+concat(Text1, Text2)               // => ExampleSample
 
-" Concat w/ Separator: Add Separator Between Strings
-concat(concat(Name1, ',', Name2)) " => Dilaray,Serhat
+// Concat w/ Separator: Add Separator Between Strings
+concat(concat(Text1, ','), Text2)  // => Example,Sample
 
-" Concat w/ Space: Add Space Between Strings
-concat_with_space(Name1, Name2, 1) " => Dilaray Serhat     | 1 Character Space
-concat_with_space(Name1, Name2, 3) " => Dilaray   Serhat   | 3 Character Space
+// Concat w/ Space: Add Space Between Strings
+concat_with_space(Text1, Text2, 1) // => Example Sample     | 1 Character Space
+concat_with_space(Text1, Text2, 3) // => Example   Sample   | 3 Character Space
 
-" Left & Right: Get Left & Right Part of String
-left(Name1, 2)   " => Di
-right(Name1, 2)  " => ay
+// Left & Right: Get Left & Right Part of String
+left(Text1, 2)   // => Ex
+right(Text1, 2)  // => le
 
-" Left & Right: Ex
-left outer join /sapsll/maritc as Maritc on Maritc.matnr           = _Sip.matnr
+// Left & Right: Ex
+left outer join /sapsll/maritc as Maritc on Maritc.matnr           = _Item.matnr
                                         and left(Maritc.ccngn, 17) = I_ProductPlant.Commodity
 
-" Lpad & Rpad: Add Character to Left & Right
-lpad(Name1, 10, '0') " => 0000Dilaray
-rpad(Name2, 10, '0') " => Serhat0000
+// Lpad & Rpad: Pad to a Total Length With a Character
+lpad(Text1, 10, '0') // => 000Example  | padded from 7 to 10 characters
+rpad(Text2, 10, '0') // => Sample0000  | padded from 6 to 10 characters
 
-" Lowercase & Uppercase: Convert to Lower & Upper
-lowercase(Name2) " => serhat
-uppercase(Name1) " => DILARAY
+// Lowercase & Uppercase: Convert to Lower & Upper
+lowercase(Text2) // => sample
+uppercase(Text1) // => EXAMPLE
 
-" Instr: Find Position of Character
-instr(Name1, 'a')   " => 4
-instr(Name1, 'z')   " => 0
-instr(Name2, 'rh')  " => 3
+// Instr: Find Position of Character
+instr(Text1, 'a')   // => 3
+instr(Text1, 'z')   // => 0
+instr(Text2, 'mp')  // => 3
 
-" Length: Find Length of String
-length(Name1) " => 7
+// Length: Find Length of String
+length(Text1) // => 7
 
-" Ltrim & Rtrim: Delete Left & Right Matched Character
-ltrim(Name1, 'D') " => ilaray
-rtrim(Name2, 't') " => Serha
+// Ltrim & Rtrim: Delete Left & Right Matched Character
+ltrim(Text1, 'E') // => xample
+rtrim(Text2, 'e') // => Sampl
 
-" Replace: Replace Character in String
-replace(Name1, 'a', 'o')                " => Diloroy
-replace(Name1, 'Dilaray','Mır Mır' )    " => Mır Mır
+// Replace: Replace Character in String
+replace(Text1, 'a', 'o')                 // => Exomple
+replace(Text1, 'Example', 'SampleText')  // => SampleText
 
-" Substring: Get Substring of String
-substring(Name1, 2, 3) " => ila
+// Substring: Get Substring of String
+substring(Text1, 2, 3) // => xam
 ```
 
-> 📝 **`concat(concat(Name1, ',', Name2))`** in the original note has an inner call with three arguments — but `concat()` in CDS takes exactly **two** arguments. What actually produces `'Dilaray,Serhat'` is a nested call: `concat(concat(Name1, ','), Name2)`, i.e. first append the separator to `Name1`, then append `Name2` to that result. Keep this in mind: unlike ABAP's `CONCATENATE ... SEPARATED BY`, CDS `concat()` is strictly binary and must be nested for more than two parts, or you can use `concat_with_space` when the separator is a space.
+> 📝 **`concat()` takes exactly two arguments.** The original note wrote the separator example as `concat(concat(Text1, ',', Text2))` — an inner call with three arguments, which does not compile. The corrected form above nests the calls: `concat(concat(Text1, ','), Text2)`, i.e. first append the separator to `Text1`, then append `Text2` to that result. Unlike ABAP's `CONCATENATE ... SEPARATED BY`, CDS `concat()` is strictly binary and must be nested for more than two parts; use `concat_with_space` when the separator is a space.
 
 ## Function Reference
 
@@ -86,7 +86,7 @@ substring(Name1, 2, 3) " => ila
 
 ```abap
 left outer join /sapsll/maritc as Maritc
-  on  Maritc.matnr           = _Sip.matnr
+  on  Maritc.matnr           = _Item.matnr
   and left(Maritc.ccngn, 17) = I_ProductPlant.Commodity
 ```
 
@@ -107,6 +107,7 @@ Here `left()` truncates a longer commodity code (`ccngn`) down to the first 17 c
 
 - Use string functions for **presentation/matching** logic, not as a substitute for properly normalized keys.
 - Favor `concat_with_space` over manual `concat(concat(a, ' '), b)` chains when a literal space separator is all that's needed — it's shorter and clearer.
+- Remember `lpad`/`rpad` take a **total target length**, not a number of padding characters — `lpad('Example', 10, '0')` yields `000Example`, not ten zeros followed by the text.
 
 ## Interview Notes
 

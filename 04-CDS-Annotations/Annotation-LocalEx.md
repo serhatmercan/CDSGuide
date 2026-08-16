@@ -11,14 +11,14 @@ Seeing the annotations in the context of a full field list makes the intent much
 ## Full Example (original note)
 
 ```abap
-" Local Annotation - Example for CDS Views
+// Local Annotation - Example for CDS Views
 define view ZSM_I_001
   as select from vbap
 
 {
   key vbeln,
 
-      " Action
+      // Action
     @UI.lineItem:[{
         position: 10,
         importance: #HIGH
@@ -31,7 +31,7 @@ define view ZSM_I_001
     ]
     CapacityID,
 
-      " Analytics Detail
+      // Analytics Detail
     @AnalyticsDetails: {
         query: {
             axis: #FREE,
@@ -41,7 +41,7 @@ define view ZSM_I_001
     }
     CounterParty,
 
-      " Analytics Detail II
+      // Analytics Detail II
     @AnalyticsDetails: {
         exceptionAggregationSteps: {
         exceptionAggregationBehavior: #AVG,
@@ -53,23 +53,23 @@ define view ZSM_I_001
         }
       }
 
-      " Calculate Field - I
+      // Calculate Field - I
     @ObjectModel: {
         virtualElement: true,
         virtualElementCalculatedBy: 'ABAP:ZSM_CL_TOTAL_ORDER'
     }
-    @Semantics.quantity.unitOfMeasure : 'VRKME_VL'
-    cast(0 as abap.quan(13,3))                                       as lfimg_vl,
+    @Semantics.quantity.unitOfMeasure : 'meins'
+    cast(0 as abap.quan(13,3))                                       as TotalQuantity,
 
-      " Calculate Field - II
+      // Calculate Field - II
     @ObjectModel: {
         virtualElement: true,
         virtualElementCalculatedBy: 'ABAP:ZSM_CL_TOTAL_ORDER'
     }
-    @Semantics.quantity.unitOfMeasure : 'WAERK_VA'
-    cast(0 as abap.curr(15,2))                                       as NetwrVF,
+    @Semantics.amount.currencyCode : 'Currency'
+    cast(0 as abap.curr(15,2))                                       as TotalNetAmount,
 
-      " Consumption: Filter
+      // Consumption: Filter
     @Consumption.filter: {
         hidden: false,
         mandatory: true,
@@ -81,7 +81,7 @@ define view ZSM_I_001
       @UI.selectionField: [ { position: 10 } ]
       Budat,
 
-      " Consumption: Value Help
+      // Consumption: Value Help
     @Consumption: {
         valueHelpDefinition:[{
             entity: {
@@ -99,7 +99,7 @@ define view ZSM_I_001
     }
     key oiisocisl.lgort                                              as StorageLocation,
 
-      " Consumption: Value Help(Multi)
+      // Consumption: Value Help(Multi)
     @Consumption.valueHelpDefinition:[{
         entity: {
             name: 'ZSM_I_BATCH_MATNR_VH',
@@ -124,29 +124,29 @@ define view ZSM_I_001
     }]
     Batch,
 
-      " Currency Code: Assign
+      // Currency Code: Assign
     @Semantics.amount.currencyCode: 'Currency'
     GrossAmount - NetAmount                                          as TaxAmount,
 
-      " Currency Code: Define
+      // Currency Code: Define
     @Semantics.currencyCode: true
     TransactionCurrency                                              as Currency,
 
-      " Data Visualization: Criticality -> Description
+      // Data Visualization: Criticality -> Description
     @UI.lineItem.criticality: 'QuantityCrytical'
     case
         when Quantity > 100 then 'Sufficient Stock'
         when Quantity > 10 then 'Less than 100'
         else 'Less than 10' end                                      as QuantityDescription,
 
-      " Data Visualization: Criticality -> Value
+      // Data Visualization: Criticality -> Value
       @UI.hidden: true
       case
         when Quantity > 100 then 3
         when Quantity > 10 then 2
         else 1 end                                                   as QuantityCrytical,
 
-      " External URL
+      // External URL
       @UI: {
         lineItem: {
             type: #WITH_URL,
@@ -155,11 +155,11 @@ define view ZSM_I_001
       }
       CompanyName,
 
-      concat('http://gooogle.com/search?q=', CompanyName)            as URL,
+      concat('https://www.example.com/search?q=', CompanyName)       as URL,
 
-      concat('#PurchaseOrder-display?P_DOC_ID=', PurchasingDocument) as URL
+      concat('#PurchaseOrder-display?P_DOC_ID=', PurchasingDocument) as IntentURL,
 
-    " Facet(Body -> Top Of Page)
+    // Facet(Body -> Top Of Page)
     @UI.facet:[{
         id: 'Detail',
         label: 'Header',
@@ -174,7 +174,7 @@ define view ZSM_I_001
         type: #LINEITEM_REFERENCE
     }],
 
-      " Field Group
+      // Field Group
       @UI: {
         fieldGroup:[{
             qualifier: 'WerksQualifier',
@@ -188,29 +188,29 @@ define view ZSM_I_001
       @ObjectModel.text: { element:['PlantText']}
       key oiisocisl.werks                                            as Plant,
 
-      " Field Description
+      // Field Description
       @ObjectModel.text.element:['veh_text']
       vehicle,
 
-      " Field Description II
+      // Field Description II
       @ObjectModel.text: {
           association: '_MaterialText',
           element:['Maktx']
       }
 
-      " Hidden in OData & UI
+      // Hidden in OData & UI
       @Consumption.hidden: true
       posnr,
 
-      " Measure Unit: Assign
+      // Measure Unit: Assign
       @Semantics.quantity.unitOfMeasure: 'MEINS'
       kwmeng,
 
-      " Measure Unit: Define
+      // Measure Unit: Define
       @Semantics.unitOfMeasure: true
       meins,
 
-      " Rating Indicator
+      // Rating Indicator
       @UI.dataPoint: {
         targetValue: 6,
         visualization: #RATING
@@ -219,7 +219,7 @@ define view ZSM_I_001
       @UI.lineItem: { position: 10, type: #AS_DATAPOINT }
       Rating,
 
-      " Rating Indicator II(Bar Chart)
+      // Rating Indicator II(Bar Chart)
       @UI: {
         dataPoint: {
             criticalityCalculation: {
@@ -240,7 +240,7 @@ define view ZSM_I_001
       }
       key count(*)                                                   as TotalPlants,
 
-      " Search & Value Help
+      // Search & Value Help
       @Consumption.valueHelpDefault.binding.usage: #FILTER_AND_RESULT
       @ObjectModel.foreignKey.association: '_Plant'
       @Search: {
@@ -251,38 +251,39 @@ define view ZSM_I_001
       @UI.lineItem.position: 20
       werks                                                          as Werks,
 
-      " Text Field Name & Hidden in UI
+      // Text Field Name & Hidden in UI
       @EndUserText.label: 'Material'
       @UI.hidden: true
       matnr,
 
-      " User Information - System(Created At || Last Changed At)
+      // User Information - System(Created At || Last Changed At)
       @Semantics.systemDateTime.createdAt: true
       @Semantics.systemDateTime.lastChangedAt: true
       created_at,
 
-      " User Information - User(Created By || Last Changed By)
+      // User Information - User(Created By || Last Changed By)
       @Semantics.user.createdBy: true
       @Semantics.user.lastChangedBy: true
-      created_by,
+      created_by
 }
 ```
 
-> ⚠️ **Illustrative, not a compilable single view.** This example intentionally packs *every* interesting annotation pattern into one field list to serve as a lookup catalog. In a real view, several things here would need adjusting before activation: two elements are named `URL` (duplicate alias), fields like `oiisocisl.lgort`/`werks` come from an alias never declared in a `FROM`, and `vehicle`/`_MaterialText` blocks appear without a trailing comma/alias in places. Treat each annotated **snippet** as copy-paste-ready in isolation, not the file as a whole.
+> ⚠️ **CONCEPTUAL CATALOGUE — illustrative, not a compilable single view.** This example intentionally packs *every* interesting annotation pattern into one field list to serve as a lookup catalog. In a real view, several things here would still need adjusting before activation: fields like `oiisocisl.lgort`/`werks` come from an alias never declared in a `FROM`, `key count(*)` is not a valid key, and the `vehicle`/`_MaterialText` blocks appear without a trailing comma/alias in places. Treat each annotated **snippet** as copy-paste-ready in isolation, not the file as a whole.
 
 ## Highlights Worth Calling Out
 
 | Pattern | What it demonstrates |
 |---|---|
 | `@UI.lineItem: [{...}, {dataAction: ..., type: #FOR_ACTION}]` | A field can carry **multiple** `@UI.lineItem` entries — one as a normal column, another declaring a UI **action** button. |
-| `virtualElement` + `virtualElementCalculatedBy` on `lfimg_vl` / `NetwrVF` | Two **calculated (virtual) fields**, both computed by the same exit class (`ZSM_CL_TOTAL_ORDER`) — see [10-Examples/Class.md](../10-Examples/Class.md) for the implementation. |
+| `virtualElement` + `virtualElementCalculatedBy` on `TotalQuantity` / `TotalNetAmount` | Two **calculated (virtual) fields**, both computed by the same exit class (`ZSM_CL_TOTAL_ORDER`) — see [10-Examples/Class.md](../10-Examples/Class.md) for the implementation. Note the semantics pairing: the quantity field points at a unit-of-measure element, the amount field at a currency-code element. |
 | `QuantityDescription` / `QuantityCrytical` pair | The standard SAP pattern for **UI criticality**: one field holds the human-readable text, a second (usually `@UI.hidden`) holds the numeric criticality value (`1`/`2`/`3`) that `@UI.lineItem.criticality` points to. |
 | `@UI.facet` with `#COLLECTION` and `#LINEITEM_REFERENCE` | Defines the object page layout: a header collection facet plus a table facet pointing at an association (`_Material`). |
 | `@UI.dataPoint` + `criticalityCalculation` | Turns a plain number into a KPI/rating/progress visualization with configurable thresholds. |
 
 ## Common Mistakes
 
-- ❌ Assigning two output fields the same alias (`URL` appears twice in the original notes) — CDS requires unique element names.
+- ❌ Assigning two output fields the same alias (`URL` appeared twice in the original notes; the second is now `IntentURL`) — CDS requires unique element names.
+- ❌ Annotating an amount field with `@Semantics.quantity.unitOfMeasure`, or a quantity field with `@Semantics.amount.currencyCode` — amounts pair with a currency-code element, quantities with a unit-of-measure element. The original notes had this reversed on the `CURR` virtual element.
 - ❌ Forgetting the `key` keyword on genuinely unique fields while adding it to aggregated/calculated fields that aren't actually unique per row (e.g. `count(*) as TotalPlants` marked `key` only makes sense in very specific aggregation-view designs).
 - ❌ Mixing multiple unrelated `@UI` sub-annotations (`lineItem`, `facet`, `dataPoint`) on the same field without checking how Fiori Elements actually renders the combination — test in a running Fiori Elements preview, not just by reading the annotations.
 

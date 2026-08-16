@@ -17,27 +17,27 @@ Use local annotations whenever metadata is specific to one field: currency/unit 
 > ⚠️ **Preservation note:** the notes below were captured from documentation/IntelliSense tooltips and, in a few places, the annotation value and its descriptive comment got concatenated into a single dotted path (e.g. `@Consumption.": { Hidden.in.OData.&.UI.semanticObject: ... }`). That form does **not** parse as valid CDS syntax — it's a documentation artifact, not something to paste into a real view. The **cleaned-up equivalents** are provided in the reference table further down; keeping the raw notes here preserves the original research trail.
 
 ```abap
-" Local Annotation for CDS Views
+// Local Annotation for CDS Views
 @AnalyticsDetails:
 
 {
   exceptionAggregationSteps: {
-    " Exception Aggregation Behavior: AVG || COUNT || COUNT_DISTINCT || FIRST || LAST || MAX || MIN || NHA || STD || SUM
+    // Exception Aggregation Behavior: AVG || COUNT || COUNT_DISTINCT || FIRST || LAST || MAX || MIN || NHA || STD || SUM
     exceptionAggregationBehavior    : #IGNORE,
-    " Exception Aggregation Elements: Field Name
+    // Exception Aggregation Elements: Field Name
     exceptionAggregationElements    :['NetAmount']
   }
   query: {
-      axis                            : #ROWS, " Axis: COLUMNS || FREE || ROWS
-      decimals                        : 2, " Decimal Places
-      formula                         : 'NODIM(IntrstRtInPrcnt+0)'    " Formula
-      display                         : #TEXT, " Display: KEY || KEY_TEXT || TEXT || TEXT_KEY
-      variableSequence                : 10                            " Type: Integer
+      axis                            : #ROWS, // Axis: COLUMNS || FREE || ROWS
+      decimals                        : 2, // Decimal Places
+      formula                         : 'NODIM(IntrstRtInPrcnt+0)'    // Formula
+      display                         : #TEXT, // Display: KEY || KEY_TEXT || TEXT || TEXT_KEY
+      variableSequence                : 10                            // Type: Integer
   }
 }
 
-@DefaultAggregation: #FORMULA                      " AVG || COUNT || COUNT_DISTINCT || FORMULA || MAX || MIN || NONE || SUM
-@EndUserText.label                      : 'Material'                    " Text Field Name in OData & UI
+@DefaultAggregation: #FORMULA                      // AVG || COUNT || COUNT_DISTINCT || FORMULA || MAX || MIN || NONE || SUM
+@EndUserText.label                      : 'Material'                    // Text Field Name in OData & UI
 
 @Semantics.amount.currencyCode: 'Currency'
 @Semantics.quantity.unitOfMeasure: 'MEINS'
