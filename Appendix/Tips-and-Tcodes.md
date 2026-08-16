@@ -29,7 +29,7 @@ ABAP source and CDS source use **different** comment characters. Mixing them up 
 | Goal | How |
 |---|---|
 | Find your own custom (`Z`/`Y`) CDS views | **Project Explorer** → Search: `*z*` `type:ddls` |
-| Find SAP demo CDS views (e.g. `SNWD_*` flight/EPM models used throughout this guide's examples) | **Project Explorer** → Search: `*demo*` `type:ddls` |
+| Find SAP demo CDS views (e.g. the `SNWD_*` tables of the **EPM** — Enterprise Procurement Model — sample data set used in some examples in this guide) | **Project Explorer** → Search: `*demo*` `type:ddls` |
 | Find standard SAP CDS views for a specific area (e.g. material) | **Project Explorer** → Search: `*material*` `type:ddls` |
 | Open any ABAP Development Object directly by name | `Ctrl + Shift + A` (Open ABAP Development Object) |
 

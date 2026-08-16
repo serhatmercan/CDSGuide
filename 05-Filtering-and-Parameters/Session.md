@@ -1,5 +1,7 @@
 # Session Variables (`$session`)
 
+> **CDS generation:** `$session` works identically in both generations, and the examples below use each. Note that `$session.client` is about *reading* the client as a value — it is not how client handling is configured. That differs between generations: explicit `@ClientHandling` for DDIC-based views, implicit and automatic for view entities. See [04-CDS-Annotations/Annotation-Global.md](../04-CDS-Annotations/Annotation-Global.md).
+
 ## What is it?
 
 `$session` gives a CDS view access to **client-session context** — the current client, system date, logon language, and user — without needing to pass them in explicitly as parameters.

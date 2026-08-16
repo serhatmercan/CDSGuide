@@ -52,9 +52,7 @@ min( case when o.Lictp = 'Z001' then v.Oidatto1 end ) as MinDate
 // Mod: Returns the Remainder of a Number
 mod(ceil(Amount), 5) as Remainder // => 3
 
-// Numeric Value (String -> Numeric)
-// --> '00015'   || '99.75'
-// <-- 15        || 99.75
+// Numeric Value: Amount/Quantity Without Its Currency/Unit Key
 get_numeric_value(Pricing.ConditionQuantity)
 
 // Round: Rounded To The Given Number of Decimal Places
@@ -74,7 +72,7 @@ round(Amount, 2) // => 17.86
 | `division(a, b, decimals)` | Decimal division, result rounded to the given number of decimal places. |
 | `mod(a, b)` | Remainder of `a` divided by `b`. |
 | `min(expr)` / `max(expr)` | Aggregate minimum/maximum — usable with `GROUP BY` (see [07-Query-and-Reporting/Query.md](../07-Query-and-Reporting/Query.md)) or standalone over a `CASE` expression. |
-| `get_numeric_value(str)` | Extracts the numeric value from a character field (e.g. a padded/formatted quantity). |
+| `get_numeric_value(arg)` | Returns the **numeric value of an amount or quantity**, independently of its associated currency key or unit of measure. Useful when you need the raw number for arithmetic rather than the semantically-typed amount/quantity. |
 
 > 📝 **`ceil` and `floor` take exactly one argument.** They return an integer — `ceil(17.856)` is `18`, `floor(17.856)` is `17`. There is no decimal-place parameter; if you need rounding to a given number of decimals, that is `round(n, decimals)`. The original notes wrote these as `ceil(Amount, 1)` / `floor(Amount, 1)`, which does not compile.
 

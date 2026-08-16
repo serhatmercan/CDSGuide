@@ -1,5 +1,7 @@
 # CDS View Extensions (`extend view`)
 
+> **CDS generation:** This chapter documents the **classic** extension model — `extend view`, applied to DDIC-based views. View entities use a different statement, `extend view entity`, with its own rules. Do not assume the annotations below transfer unchanged. See [Classic vs Modern CDS](../02-CDS-Basics/Classic-vs-Modern.md).
+
 ## What is it?
 
 A **CDS view extension** adds new fields, associations, or annotations to an *existing* CDS view **without modifying its original source code**. The extension is a separate DDL source object that references the base view by name.

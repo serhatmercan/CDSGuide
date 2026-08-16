@@ -63,8 +63,8 @@ cast( cast( mmh.mcount as abap.dec(16,3) ) / 1000 as abap.dec(16,3) ) as TotalHe
 0.25 as DecimalValue
 
 // Decimal - IV (DEC)
-// --> '99.75'
-// <-- 99
+// get_numeric_value() strips the quantity's unit association,
+// leaving a plain number that can then be cast.
 cast(get_numeric_value(Pricing.ConditionQuantity) as abap.dec(5,0)) as ConditionQuantity
 
 // Decimal - Float

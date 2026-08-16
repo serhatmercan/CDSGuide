@@ -1,5 +1,7 @@
 # Input Parameters
 
+> **CDS generation:** Mixed by design — the first example is classic `define view`, the later ones use `define view entity`. Parameter syntax and `$parameters` work the same way in both. See [Classic vs Modern CDS](../02-CDS-Basics/Classic-vs-Modern.md).
+
 ## What is it?
 
 **Input parameters** let a CDS view accept values from the caller at query time (`WITH PARAMETERS`), similar to arguments passed into a function. Parameters can be used in the `WHERE` clause, in the field list, or passed on to a nested parameterized view.
@@ -101,6 +103,12 @@ group by zsd_i_0001.bonus_group,
 ```
 
 A parameterized view can pass its own parameters straight through to a *nested* parameterized view (`zsd_i_0001(...)`) — this is how parameters propagate down a chain of layered views (interface → composite → consumption).
+
+> ⚠️ **Teaching case — `key` does not guarantee uniqueness.** Look closely at the `GROUP BY`: it groups by `bonus_group` in addition to the three fields declared `key`, but `bonus_group` is **not** in the projection. The grouping is therefore finer than the declared key, so two rows with different bonus groups but the same `SalesOrg`/`Material`/`Period` both reach the result — two rows sharing an identical declared key.
+>
+> The `key` keyword in CDS is a **declaration of intent** consumed by OData, RAP and Fiori Elements to identify rows. It is not a database constraint, and CDS does not verify it against the data. When a consumer that relies on key uniqueness (an OData entity set, a RAP entity, a value help) receives duplicate keys, the failure usually shows up far from the view — as an odd UI, a wrong `$expand`, or a runtime error.
+>
+> This example is preserved deliberately, because the mismatch is realistic and easy to miss. Whether the fix is to expose `bonus_group` as a fourth key or to drop it from the `GROUP BY` depends on the intended business granularity — those are different results, and the view alone does not say which was meant. Whenever you group by a dimension you do not project, confirm that the declared key still identifies exactly one row.
 
 ## Joining a Parameterized View (original note, corrected)
 

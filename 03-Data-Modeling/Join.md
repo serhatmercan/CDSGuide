@@ -1,5 +1,7 @@
 # Joins
 
+> **Context:** These examples use classic `define view` syntax because the concept is common in existing productive SAP landscapes. Join syntax itself is unchanged in `define view entity` — only the view header differs.
+
 ## What is it?
 
 A `JOIN` combines rows from two data sources (tables or CDS views) based on a matching condition, and — unlike an association — is **always executed** as part of the view's generated SQL.

@@ -115,25 +115,11 @@ define root view entity ZSM_I_001
 
 `select distinct` removes duplicate rows from the result **after** the join — useful when a join can legitimately produce repeated combinations that should be collapsed. Compare this with `UNION` vs. `UNION ALL` de-duplication semantics (see [03-Data-Modeling/Union.md](../03-Data-Modeling/Union.md)).
 
-## Consuming a Table Function (cross-reference)
+## Consuming a Table Function
 
-```abap
-// Function
-define view entity ZSM_I_WORKING_DAYS
-  as select from ZSM_F_WORKING_DAYS( p_client: $session.client , p_fabkl: 'PI' )
-{
-  key CalendarDate,
-      FactoryCalendar,
-      MonthFirstDate,
-      MonthLastDate,
-      WorkingDaysMonth,
-      IsWorkingDay
-}
-where
-  IsWorkingDay <> 0
-```
+A CDS table function is selected from exactly like a regular view — including passing its parameters — so nothing in this chapter changes when the data source happens to be AMDP-backed.
 
-See [06-Built-In-Functions/Function.md](../06-Built-In-Functions/Function.md) for how `ZSM_F_WORKING_DAYS` itself is implemented via AMDP/SQLScript.
+The worked example, together with the AMDP class that implements it, lives in **[06-Built-In-Functions/Function.md](../06-Built-In-Functions/Function.md)** rather than being repeated here.
 
 ## `GROUP BY` with a Composite Key
 
@@ -171,6 +157,8 @@ where meins =  'ST'
 ```
 
 This example demonstrates the full range of `WHERE` operators: `=`, `<>`, `LIKE` (with `%` wildcard), `BETWEEN`, `IS NULL`/`IS NOT NULL`, `IS INITIAL`/`IS NOT INITIAL`, `NOT (...)`, parenthesized groups, and combining `AND`/`OR`.
+
+> 📝 **`IS INITIAL` is not `IS NULL`.** `IS [NOT] INITIAL` tests whether the operand holds the initial value of its built-in dictionary type; `IS [NOT] NULL` tests whether there is no value at all (typically the unmatched side of an outer join). They are different tests and must not be substituted for one another. `IS [NOT] INITIAL` is available in both DDIC-based views and view entities — including in join and association `ON` conditions — but the operand may not have certain types, among them `CLNT`, `STRING`, `RAW`, `RAWSTRING`, `DECFLOAT16`/`DECFLOAT34`, `DATN`, `TIMN` and `UTCL`. Check the ABAP Keyword Documentation for your release for the exact exclusion list.
 
 > ⚠️ **Operator precedence trap:** `AND` binds tighter than `OR` in SQL/CDS, exactly like in most programming languages. In the snippet above, the conditions after the first `or` are **not** grouped with the earlier `AND` chain unless explicitly parenthesized — as written, this `WHERE` clause evaluates as `(meins = 'ST' AND auart <> 'Z113' AND ... AND NOT(...)) OR (vbap.matnr BETWEEN ...) OR (vbrk.vbeln IS NULL) OR (funcarea IS NOT INITIAL)`. If the intent was for *all* conditions to apply together, wrap the entire `OR` chain in its own parentheses, or restructure with explicit grouping. This is one of the most common real-world CDS bugs — always add parentheses when mixing `AND` and `OR` in the same `WHERE` clause, even when operator precedence would technically produce the intended result, purely for readability and to avoid future mistakes when the condition is edited.
 

@@ -1,5 +1,7 @@
 # Table Functions & AMDP (Overview)
 
+> **Context:** Table functions implemented in AMDP are **HANA-specific** and step outside declarative, database-agnostic CDS. That has consequences beyond portability: AMDP does not support CDS access control (see Common Mistakes), and this is not the default modelling style for cloud-ready development. Treat it as a deliberate escape hatch. See [Classic vs Modern CDS](../02-CDS-Basics/Classic-vs-Modern.md).
+
 ## What is it?
 
 A **CDS table function** is a CDS artifact whose result set is **not** computed by declarative DDL, but by a custom **AMDP (ABAP Managed Database Procedure)** method written in SQLScript. It behaves like a regular CDS entity to consumers (can be selected from, joined, exposed via OData), but its actual logic is imperative SQLScript running inside HANA.
@@ -94,7 +96,7 @@ ENDCLASS.
 | `implemented by method <class>=>get_data` | Points to the AMDP method providing the actual result. |
 | `INTERFACES if_amdp_marker_hdb` | Marks the class as an AMDP class, required for any class implementing database procedures. |
 | `METHOD ... BY DATABASE FUNCTION FOR HDB LANGUAGE SQLSCRIPT OPTIONS READ-ONLY USING <entity>` | The AMDP method body is written in **SQLScript**, not ABAP; `USING zsm_i_amdp` declares which CDS entities/tables the procedure is allowed to read from. |
-| `workdays_between('PI', PriceBeginDate, PriceEndDate)` | An HDI/HANA-native **factory calendar** function (`'PI'` is the factory calendar ID) — this kind of calendar-aware calculation is a classic reason to reach for a table function/AMDP instead of plain CDS. |
+| `workdays_between(...)` | A **HANA-native factory calendar** function (here `'PI'` is the factory calendar ID) — this kind of calendar-aware calculation is a classic reason to reach for a table function/AMDP instead of plain CDS. ⚠️ **Verify the signature for your HANA version** before reusing this call: `WORKDAYS_BETWEEN` is a SAP HANA SQL datetime function whose argument list (factory calendar, start date, end date, and a schema/source argument in some versions) differs between HANA releases. The example below is preserved as it was written against one specific system; treat the argument list as system-specific, not canonical. |
 
 ## Consuming a Table Function from a CDS View (original note, from Query.md context)
 

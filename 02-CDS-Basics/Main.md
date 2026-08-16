@@ -1,5 +1,7 @@
 # CDS View Basics — `define view`
 
+> **CDS generation:** This chapter introduces **both** generations — the classic DDIC-based `define view` and the modern `define view entity`. For why the guide covers both and how to choose between them, see [Classic vs Modern CDS](Classic-vs-Modern.md).
+
 ## What is it?
 
 The `define view` statement is the entry point for creating a classic CDS view. It declares a new **DDL source** that selects fields from one or more underlying tables (or other CDS views) and exposes them as a reusable, database-independent data model.

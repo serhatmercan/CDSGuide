@@ -31,7 +31,9 @@ end as ConvertedDocumentTime
 | Function | Purpose |
 |---|---|
 | `tims_is_valid(time)` | Returns `1` if the value is a genuine, valid time (`000000`–`235959`), `0` otherwise (e.g. `999999` sentinel values, malformed input). |
-| `tims_to_timn(time, mode)` | Converts/normalizes a `TIMS` value; the `'NULL'` mode parameter controls how invalid input is handled during conversion. |
+| `tims_to_timn(time, on_error)` | Converts a value in the ABAP `TIMS` representation to the HANA `TIME` representation associated with the DDIC type `TIMN`. The second argument is `on_error`, controlling what happens when the input is not a valid time. |
+
+> 📝 **`tims_to_timn` is a type conversion, not a formatter.** It moves a value from the ABAP `TIMS` representation (a six-character `HHMMSS` field) to the `TIMN` representation used by HANA's native `TIME` type. Its second parameter is `on_error` — the same error-handling concept used by the date functions in [Date.md](Date.md) — not a display mode.
 
 ## Explaining the Pattern
 

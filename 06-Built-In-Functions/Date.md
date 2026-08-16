@@ -45,17 +45,9 @@ cast( dats_days_between( $session.system_date,
 // Check Date
 // dats_is_valid( date )
 dats_is_valid(ReferenceDate) // => 0: False || 1: True
-
-// Convert Date & Time To Timestamp
-// StartDate (DATS)              : 20250221
-// StartTime (TIMS)              : 121500
-// Timestamp (YYYYMMDDHHMMSS)    : 20250221121500
-dats_tims_to_tstmp( StartDate,
-                    StartTime,
-                    abap_system_timezone( $session.client, 'NULL' ),
-                    $session.client,
-                    'NULL' ) as Timestamp
 ```
+
+> 📝 **Combining a date and a time into a timestamp** uses `dats_tims_to_tstmp`, which takes a genuine time-zone argument. It is documented in full — alongside `tstmp_to_dats`, `tstmp_to_tims` and `abap_system_timezone`, which share the same time-zone/client arguments — in **[Conversion.md](Conversion.md)**, rather than being duplicated here.
 
 ## Function Reference
 
@@ -65,7 +57,7 @@ dats_tims_to_tstmp( StartDate,
 | `dats_add_months(date, months, on_error)` | `date`: DATS · `months`: INT4 · `on_error`: CHAR(10) literal | Adds/subtracts whole months. |
 | `dats_days_between(date1, date2)` | both DATS | Number of days between two dates (`date2 - date1`; negative if `date2` is earlier). Returns INT4. |
 | `dats_is_valid(date)` | DATS | Returns `1` if the value is a valid calendar date, `0` otherwise. No `on_error` parameter. |
-| `dats_tims_to_tstmp(date, time, tzone, clnt, on_error)` | | Combines a date + time into a `TIMESTAMP` value, converting from the given time zone. |
+| `dats_tims_to_tstmp(date, time, tzone, clnt, on_error)` | | Combines a date + time into a `TIMESTAMP` value, converting from the given time zone. Documented in [Conversion.md](Conversion.md). |
 
 > ⚠️ **The third parameter of `dats_add_days`/`dats_add_months` is `on_error`, not a time zone.** These functions perform no time-zone conversion. `on_error` must be a **literal** of type `CHAR(10)` (not case-sensitive) and controls what happens when the calculation produces an invalid date:
 >

@@ -1,5 +1,7 @@
 # Access Control (DCL) & Authorization Checks
 
+> **CDS generation:** DCL applies across **both** generations — `define role` and `@AccessControl.authorizationCheck` work the same way for DDIC-based views and view entities. The one generational difference is a security-relevant one: a DDIC-based view also has a generated database view, and reading *that* bypasses access control entirely. View entities have no such second path. See [02-CDS-Basics/Program.md](../02-CDS-Basics/Program.md).
+
 ## What is it?
 
 **Access Control (DCL — Data Control Language)** is a separate CDS artifact (`define role`) that declares row-level authorization restrictions for a CDS view. Once such a role exists, its restrictions are applied implicitly whenever the CDS entity is read via ABAP SQL or an SADL query — provided the entity does not switch access control off with `@AccessControl.authorizationCheck: #NOT_ALLOWED`.

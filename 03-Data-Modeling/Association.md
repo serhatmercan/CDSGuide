@@ -1,5 +1,7 @@
 # Associations & Cardinality
 
+> **CDS generation:** Most examples here use classic `define view` syntax, because that is the form these patterns take in existing productive systems. The association concepts themselves apply equally to `define view entity`. See [Classic vs Modern CDS](../02-CDS-Basics/Classic-vs-Modern.md).
+
 ## What is it?
 
 An **association** defines a navigable relationship between a CDS view (or table) and another CDS entity, similar to a foreign-key relationship, but lazily resolved: the joined fields are only fetched from the database when a consumer actually requests them through a **path expression** (`_Association.Field`).
