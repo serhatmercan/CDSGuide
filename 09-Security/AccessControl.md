@@ -85,22 +85,64 @@ define role ZSM_DCL_002 {
 
 CDS access control is implicit, but it is not universal. Two cases are worth knowing before relying on a DCL role as a security boundary.
 
-### `WITH PRIVILEGED ACCESS`
+### Bypassing Access Control: `WITH PRIVILEGED ACCESS`
 
-ABAP SQL can deliberately switch access control off for a single read:
+> 🕒 **VERSION-DEPENDENT** — availability of this addition depends on
+> the ABAP release. Verify it against the ABAP Keyword Documentation
+> for your target system before relying on it.
+
+When an ABAP SQL query reads a CDS entity directly, the DCL roles of that entity are applied implicitly. The addition `WITH PRIVILEGED ACCESS` switches CDS access control **off** for the data source it is specified for — delivered and self-defined roles alike.
+
+> 📌 **PARTIAL SNIPPET** — ABAP statements only; `lv_ekorg` (purchasing organization) is assumed to be declared and filled.
 
 ```abap
-SELECT *
-  FROM zsm_i_001 WITH PRIVILEGED ACCESS
-  INTO TABLE @DATA(lt_data).
+" a) Default read: the DCL roles of I_PurchaseOrderAPI01 apply implicitly —
+"    only rows the user is authorized to see are returned.
+SELECT FROM I_PurchaseOrderAPI01
+  FIELDS PurchaseOrder, Supplier, PurchasingOrganization
+  WHERE PurchasingOrganization = @lv_ekorg
+  INTO TABLE @DATA(lt_header).
+
+" >>> Explicit authorization check for the purchasing organization (lv_ekorg) belongs here,
+"     before any privileged read.
+
+" b) Both CDS data sources privileged: the addition goes right after each
+"    data source and before its alias, and is repeated per CDS data source.
+SELECT FROM I_PurchaseOrderAPI01 WITH PRIVILEGED ACCESS AS hdr
+         INNER JOIN I_PurchaseOrderItemAPI01 WITH PRIVILEGED ACCESS AS itm
+           ON itm~PurchaseOrder = hdr~PurchaseOrder
+  FIELDS hdr~PurchaseOrder, hdr~Supplier, itm~PurchaseOrderItem, itm~OrderQuantity
+  WHERE hdr~PurchasingOrganization = @lv_ekorg
+  INTO TABLE @DATA(lt_items_privileged).
+
+" c) Only the header is privileged: I_PurchaseOrderItemAPI01 is still
+"    access-controlled. The addition is per data source, not per statement.
+SELECT FROM I_PurchaseOrderAPI01 WITH PRIVILEGED ACCESS AS hdr
+         INNER JOIN I_PurchaseOrderItemAPI01 AS itm
+           ON itm~PurchaseOrder = hdr~PurchaseOrder
+  FIELDS hdr~PurchaseOrder, hdr~Supplier, itm~PurchaseOrderItem, itm~OrderQuantity
+  WHERE hdr~PurchasingOrganization = @lv_ekorg
+  INTO TABLE @DATA(lt_items_mixed).
 ```
 
-`WITH PRIVILEGED ACCESS` disables CDS access control for that statement, overriding both delivered and self-defined roles. Two details matter:
+#### Notes and Common Mistakes
 
-- It applies **only** to the CDS entity it is specified for — not to entities reached through that entity's associations.
-- It cannot be combined with a path expression.
+1. ❌ **Assuming one addition covers the whole statement.** It is per data source: each CDS entity in a join needs its own `WITH PRIVILEGED ACCESS` (case *b* vs. case *c*).
+2. ❌ **Expecting an effect on database tables or classic views.** They have no CDS access control, so the addition does nothing there — no syntax error, simply no effect.
+3. ❌ **Combining it with a path expression.** The addition cannot be used together with a path expression on the same data source.
+4. ❌ **Treating an empty result as "no data".** Under access control, the program cannot tell "no data" from "not authorized". With the addition, that filter is gone — the program alone is responsible for authorization.
+5. ❌ **Adding it to lower layers.** Implicit access control applies only to direct ABAP SQL access. An entity read indirectly, as a data source of another CDS entity, is not checked anyway (see *Access control is not inherited between CDS entities*, below), so the addition matters only at the top-level read.
+6. ❌ **Using it to "fix" a query that returns nothing.** Legitimate uses are technical/background processing, determinations or existence checks whose results are not shown to the user, and reads after an explicit `AUTHORITY-CHECK`. An empty result for a real user is an authorization finding to resolve, not something to bypass.
 
-It exists for legitimate framework/technical reads that must see all data. Treat every occurrence in application code as something that needs justifying in review.
+#### Best Practices
+
+- Justify every `WITH PRIVILEGED ACCESS` with a comment stating why access control must not apply to this read.
+- Keep privileged reads in a small, dedicated method so they are easy to find and review.
+
+#### Interview Notes
+
+- **Q: What does `WITH PRIVILEGED ACCESS` do, and why is it risky?**
+  A: It switches CDS access control off for the data source it follows, so the DCL roles of that entity are not applied. It is risky because the read then returns data regardless of the user's authorizations — responsibility for authorization moves entirely to the program, and a missing explicit check silently exposes data.
 
 ### Access control is not inherited between CDS entities
 
