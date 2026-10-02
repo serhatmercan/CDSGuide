@@ -17,7 +17,8 @@ Coding rules: docs/CDS-Development-Rules.md (planned; until it exists, follow th
   here; link to ABAPGuide (https://github.com/serhatmercan/ABAPGuide).
 - Release numbers appear only as in the root README "Compatibility &
   Version Notes" table; everything else release-sensitive is labelled.
-- Original notes are preserved. Fix errors in place and flag them with a
+- Original notes are preserved in substance; identifiers follow the
+  current naming rules. Fix errors in place and flag them with a
   `> ⚠️ **Corrected from the original note.**` callout; do not drop them.
 
 ## Structure
@@ -70,9 +71,13 @@ Coding rules: docs/CDS-Development-Rules.md (planned; until it exists, follow th
   the chapter pass.
 - View-entity element aliases are CamelCase (`matnr as Material`). Mark
   key elements with `key`.
-- Variables: the current convention is the classic prefixes used in
-  ABAPGuide (Chapter 20 there); docs/CDS-Development-Rules.md may change
-  this.
+- ABAP naming follows SAP's Clean ABAP style guide: descriptive names
+  without type or scope prefixes (`sales_orders`, not `lt_vbak`).
+  Exceptions: names fixed by a signature you do not own (SEGW-generated
+  methods and types, BAPI and function module interfaces, inherited or
+  interface methods) stay as they are. Existing examples are migrated in
+  the planned chapter pass; legacy-labelled examples keep their construct
+  but use current naming.
 - A security-relevant read (`WITH PRIVILEGED ACCESS`, generated SQL view)
   is always shown next to the access-controlled alternative.
 
