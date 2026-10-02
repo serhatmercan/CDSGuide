@@ -95,11 +95,26 @@ Transaction codes and ADT navigation tips: [Appendix/Tips-and-Tcodes.md](Appendi
 
 Corrections and improvements are welcome — particularly technical inaccuracies, missing functions or annotations, and release-specific clarifications. Please keep additions consistent with the existing chapter structure, and cite SAP documentation for version-sensitive claims.
 
+## Related Guides
+
+| Guide | Focus |
+|---|---|
+| [ABAPGuide](https://github.com/serhatmercan/ABAPGuide) | ABAP language and techniques, classic to modern |
+| **CDSGuide** (this repository) | ABAP CDS, structured route through both generations |
+| [CDS-Cookbook](https://github.com/serhatmercan/CDS-Cookbook) | CDS and AMDP pattern library |
+| [GWGuide](https://github.com/serhatmercan/GWGuide) | SAP Gateway: SEGW and OData V2 |
+| [UIGuide](https://github.com/serhatmercan/UIGuide) | SAPUI5 and Fiori control and pattern reference |
+| [JSGuide](https://github.com/serhatmercan/JSGuide) | Plain JavaScript and browser APIs |
+| [PYGuide](https://github.com/serhatmercan/PYGuide) | Python reference with verified outputs |
+
+## Author
+
+**Serhat Mercan** — SAP BTP & AI Technical Lead | Generative AI for SAP | ABAP & SAP Fiori/UI5
+
+- LinkedIn: [serhat-mercan](https://www.linkedin.com/in/serhat-mercan/)
+- E-mail: serhatmercan94@gmail.com
+- GitHub: [serhatmercan](https://github.com/serhatmercan)
+
 ## License
 
 [MIT](LICENSE).
-
-## Contact
-
-- **Serhat Mercan** — [github.com/serhatmercan](https://github.com/serhatmercan)
-- serhatmercan94@gmail.com
